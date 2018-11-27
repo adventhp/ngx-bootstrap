@@ -25,6 +25,7 @@ export function flagDaysCalendar(
   options: FlagDaysCalendarOptions
 ): DaysCalendarViewModel {
   formattedMonth.weeks.forEach((week: WeekViewModel, weekIndex: number) => {
+    // tslint:disable-next-line:cyclomatic-complexity
     week.days.forEach((day: DayViewModel, dayIndex: number) => {
       // datepicker
       const isOtherMonth = !isSameMonth(day.date, formattedMonth.month);
@@ -56,6 +57,9 @@ export function flagDaysCalendar(
         isBefore(day.date, options.minDate, 'day') ||
         isAfter(day.date, options.maxDate, 'day');
 
+      const currentDate = new Date();
+      const isToday = !isOtherMonth && isSameDay(day.date, currentDate);
+
       // decide update or not
       const newDay = Object.assign({}, day, {
         isOtherMonth,
@@ -64,7 +68,8 @@ export function flagDaysCalendar(
         isSelectionStart,
         isSelectionEnd,
         isInRange,
-        isDisabled
+        isDisabled,
+        isToday
       });
 
       if (
