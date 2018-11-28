@@ -53,8 +53,8 @@
       "pre-push": "npm run lint-src"
     }
   },
-  "main": "bundles/ngx-bootstrap.umd.js",
-  "module": "esm5/ngx-bootstrap.js",
+  "main": "dist/bundles/ngx-bootstrap.umd.js",
+  "module": "dist/esm5/ngx-bootstrap.js",
   "typings": "ngx-bootstrap.d.ts",
   "keywords": [
     "angular",
