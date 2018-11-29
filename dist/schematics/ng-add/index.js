@@ -13,7 +13,7 @@ const utils_1 = require("../utils");
 const ng_ast_utils_1 = require("@schematics/angular/utility/ng-ast-utils");
 const project_main_file_1 = require("../utils/project-main-file");
 const ng_module_imports_1 = require("../utils/ng-module-imports");
-const bootstrapStylePath = `./node_modules/bootstrap/dist/css/bootstrap.css`;
+const bootstrapStylePath = `./node_modules/bootstrap/dist/css/bootstrap.min.css`;
 const datePickerStylePath = `./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css`;
 /* tslint:disable-next-line: no-default-export */
 function default_1(options) {

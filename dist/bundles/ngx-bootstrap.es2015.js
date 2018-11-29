@@ -340,37 +340,39 @@ function normalizeObjectUnits(inputObject) {
 function getYear(date, opts) {
     return getFullYear(date, opts.isUTC).toString();
 }
-addFormatToken('Y', null, null, function (date, opts) {
-    const y = getFullYear(date, opts.isUTC);
-    return y <= 9999 ? y.toString(10) : `+${y}`;
-});
-addFormatToken(null, ['YY', 2, false], null, function (date, opts) {
-    return (getFullYear(date, opts.isUTC) % 100).toString(10);
-});
-addFormatToken(null, ['YYYY', 4, false], null, getYear);
-addFormatToken(null, ['YYYYY', 5, false], null, getYear);
-addFormatToken(null, ['YYYYYY', 6, true], null, getYear);
-// ALIASES
-addUnitAlias('year', 'y');
-// PARSING
-addRegexToken('Y', matchSigned);
-addRegexToken('YY', match1to2, match2);
-addRegexToken('YYYY', match1to4, match4);
-addRegexToken('YYYYY', match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array, config) {
-    array[YEAR] = input.length === 2 ? parseTwoDigitYear(input) : toInt(input);
-    return config;
-});
-addParseToken('YY', function (input, array, config) {
-    array[YEAR] = parseTwoDigitYear(input);
-    return config;
-});
-addParseToken('Y', function (input, array, config) {
-    array[YEAR] = parseInt(input, 10);
-    return config;
-});
+function initYear() {
+    addFormatToken('Y', null, null, function (date, opts) {
+        const y = getFullYear(date, opts.isUTC);
+        return y <= 9999 ? y.toString(10) : `+${y}`;
+    });
+    addFormatToken(null, ['YY', 2, false], null, function (date, opts) {
+        return (getFullYear(date, opts.isUTC) % 100).toString(10);
+    });
+    addFormatToken(null, ['YYYY', 4, false], null, getYear);
+    addFormatToken(null, ['YYYYY', 5, false], null, getYear);
+    addFormatToken(null, ['YYYYYY', 6, true], null, getYear);
+    // ALIASES
+    addUnitAlias('year', 'y');
+    // PARSING
+    addRegexToken('Y', matchSigned);
+    addRegexToken('YY', match1to2, match2);
+    addRegexToken('YYYY', match1to4, match4);
+    addRegexToken('YYYYY', match1to6, match6);
+    addRegexToken('YYYYYY', match1to6, match6);
+    addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+    addParseToken('YYYY', function (input, array, config) {
+        array[YEAR] = input.length === 2 ? parseTwoDigitYear(input) : toInt(input);
+        return config;
+    });
+    addParseToken('YY', function (input, array, config) {
+        array[YEAR] = parseTwoDigitYear(input);
+        return config;
+    });
+    addParseToken('Y', function (input, array, config) {
+        array[YEAR] = parseInt(input, 10);
+        return config;
+    });
+}
 function parseTwoDigitYear(input) {
     return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
 }
@@ -418,42 +420,44 @@ function daysInMonth$1(year, month) {
         ? isLeapYear(_year) ? 29 : 28
         : (31 - modMonth % 7 % 2);
 }
-// FORMATTING
-addFormatToken('M', ['MM', 2, false], 'Mo', function (date, opts) {
-    return (getMonth(date, opts.isUTC) + 1).toString(10);
-});
-addFormatToken('MMM', null, null, function (date, opts) {
-    return opts.locale.monthsShort(date, opts.format, opts.isUTC);
-});
-addFormatToken('MMMM', null, null, function (date, opts) {
-    return opts.locale.months(date, opts.format, opts.isUTC);
-});
-// ALIASES
-addUnitAlias('month', 'M');
-// PARSING
-addRegexToken('M', match1to2);
-addRegexToken('MM', match1to2, match2);
-addRegexToken('MMM', function (isStrict, locale) {
-    return locale.monthsShortRegex(isStrict);
-});
-addRegexToken('MMMM', function (isStrict, locale) {
-    return locale.monthsRegex(isStrict);
-});
-addParseToken(['M', 'MM'], function (input, array, config) {
-    array[MONTH] = toInt(input) - 1;
-    return config;
-});
-addParseToken(['MMM', 'MMMM'], function (input, array, config, token) {
-    const month = config._locale.monthsParse(input, token, config._strict);
-    // if we didn't find a month name, mark the date as invalid.
-    if (month != null) {
-        array[MONTH] = month;
-    }
-    else {
-        getParsingFlags(config).invalidMonth = !!input;
-    }
-    return config;
-});
+function initMonth() {
+    // FORMATTING
+    addFormatToken('M', ['MM', 2, false], 'Mo', function (date, opts) {
+        return (getMonth(date, opts.isUTC) + 1).toString(10);
+    });
+    addFormatToken('MMM', null, null, function (date, opts) {
+        return opts.locale.monthsShort(date, opts.format, opts.isUTC);
+    });
+    addFormatToken('MMMM', null, null, function (date, opts) {
+        return opts.locale.months(date, opts.format, opts.isUTC);
+    });
+    // ALIASES
+    addUnitAlias('month', 'M');
+    // PARSING
+    addRegexToken('M', match1to2);
+    addRegexToken('MM', match1to2, match2);
+    addRegexToken('MMM', function (isStrict, locale) {
+        return locale.monthsShortRegex(isStrict);
+    });
+    addRegexToken('MMMM', function (isStrict, locale) {
+        return locale.monthsRegex(isStrict);
+    });
+    addParseToken(['M', 'MM'], function (input, array, config) {
+        array[MONTH] = toInt(input) - 1;
+        return config;
+    });
+    addParseToken(['MMM', 'MMMM'], function (input, array, config, token) {
+        const month = config._locale.monthsParse(input, token, config._strict);
+        // if we didn't find a month name, mark the date as invalid.
+        if (month != null) {
+            array[MONTH] = month;
+        }
+        else {
+            getParsingFlags(config).invalidMonth = !!input;
+        }
+        return config;
+    });
+}
 
 const defaultTimeUnit = {
     year: 0,
@@ -1044,191 +1048,204 @@ function configFromString(config) {
 //     }
 // );
 
-// FORMATTING
-addFormatToken('D', ['DD', 2, false], 'Do', function (date, opts) {
-    return getDate(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias('date', 'D');
-// PARSING
-addRegexToken('D', match1to2);
-addRegexToken('DD', match1to2, match2);
-addRegexToken('Do', function (isStrict, locale) {
-    return locale._dayOfMonthOrdinalParse || locale._ordinalParse;
-});
-addParseToken(['D', 'DD'], DATE);
-addParseToken('Do', function (input, array, config) {
-    array[DATE] = toInt(input.match(match1to2)[0]);
-    return config;
-});
-
-// FORMATTING
-function hFormat(date, isUTC) {
-    return getHours(date, isUTC) % 12 || 12;
-}
-function kFormat(date, isUTC) {
-    return getHours(date, isUTC) || 24;
-}
-addFormatToken('H', ['HH', 2, false], null, function (date, opts) {
-    return getHours(date, opts.isUTC).toString(10);
-});
-addFormatToken('h', ['hh', 2, false], null, function (date, opts) {
-    return hFormat(date, opts.isUTC).toString(10);
-});
-addFormatToken('k', ['kk', 2, false], null, function (date, opts) {
-    return kFormat(date, opts.isUTC).toString(10);
-});
-addFormatToken('hmm', null, null, function (date, opts) {
-    const _h = hFormat(date, opts.isUTC);
-    const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
-    return `${_h}${_mm}`;
-});
-addFormatToken('hmmss', null, null, function (date, opts) {
-    const _h = hFormat(date, opts.isUTC);
-    const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
-    const _ss = zeroFill(getSeconds(date, opts.isUTC), 2);
-    return `${_h}${_mm}${_ss}`;
-});
-addFormatToken('Hmm', null, null, function (date, opts) {
-    const _H = getHours(date, opts.isUTC);
-    const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
-    return `${_H}${_mm}`;
-});
-addFormatToken('Hmmss', null, null, function (date, opts) {
-    const _H = getHours(date, opts.isUTC);
-    const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
-    const _ss = zeroFill(getSeconds(date, opts.isUTC), 2);
-    return `${_H}${_mm}${_ss}`;
-});
-function meridiem(token, lowercase) {
-    addFormatToken(token, null, null, function (date, opts) {
-        return opts.locale.meridiem(getHours(date, opts.isUTC), getMinutes(date, opts.isUTC), lowercase);
+function initDayOfMonth() {
+    // FORMATTING
+    addFormatToken('D', ['DD', 2, false], 'Do', function (date, opts) {
+        return getDate(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('date', 'D');
+    // PARSING
+    addRegexToken('D', match1to2);
+    addRegexToken('DD', match1to2, match2);
+    addRegexToken('Do', function (isStrict, locale) {
+        return locale._dayOfMonthOrdinalParse || locale._ordinalParse;
+    });
+    addParseToken(['D', 'DD'], DATE);
+    addParseToken('Do', function (input, array, config) {
+        array[DATE] = toInt(input.match(match1to2)[0]);
+        return config;
     });
 }
-meridiem('a', true);
-meridiem('A', false);
-// ALIASES
-addUnitAlias('hour', 'h');
-// PARSING
-function matchMeridiem(isStrict, locale) {
-    return locale._meridiemParse;
+
+function initHour() {
+    // FORMATTING
+    function hFormat(date, isUTC) {
+        return getHours(date, isUTC) % 12 || 12;
+    }
+    function kFormat(date, isUTC) {
+        return getHours(date, isUTC) || 24;
+    }
+    addFormatToken('H', ['HH', 2, false], null, function (date, opts) {
+        return getHours(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken('h', ['hh', 2, false], null, function (date, opts) {
+        return hFormat(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken('k', ['kk', 2, false], null, function (date, opts) {
+        return kFormat(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken('hmm', null, null, function (date, opts) {
+        const _h = hFormat(date, opts.isUTC);
+        const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
+        return `${_h}${_mm}`;
+    });
+    addFormatToken('hmmss', null, null, function (date, opts) {
+        const _h = hFormat(date, opts.isUTC);
+        const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
+        const _ss = zeroFill(getSeconds(date, opts.isUTC), 2);
+        return `${_h}${_mm}${_ss}`;
+    });
+    addFormatToken('Hmm', null, null, function (date, opts) {
+        const _H = getHours(date, opts.isUTC);
+        const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
+        return `${_H}${_mm}`;
+    });
+    addFormatToken('Hmmss', null, null, function (date, opts) {
+        const _H = getHours(date, opts.isUTC);
+        const _mm = zeroFill(getMinutes(date, opts.isUTC), 2);
+        const _ss = zeroFill(getSeconds(date, opts.isUTC), 2);
+        return `${_H}${_mm}${_ss}`;
+    });
+    function meridiem(token, lowercase) {
+        addFormatToken(token, null, null, function (date, opts) {
+            return opts.locale.meridiem(getHours(date, opts.isUTC), getMinutes(date, opts.isUTC), lowercase);
+        });
+    }
+    meridiem('a', true);
+    meridiem('A', false);
+    // ALIASES
+    addUnitAlias('hour', 'h');
+    // PARSING
+    function matchMeridiem(isStrict, locale) {
+        return locale._meridiemParse;
+    }
+    addRegexToken('a', matchMeridiem);
+    addRegexToken('A', matchMeridiem);
+    addRegexToken('H', match1to2);
+    addRegexToken('h', match1to2);
+    addRegexToken('k', match1to2);
+    addRegexToken('HH', match1to2, match2);
+    addRegexToken('hh', match1to2, match2);
+    addRegexToken('kk', match1to2, match2);
+    addRegexToken('hmm', match3to4);
+    addRegexToken('hmmss', match5to6);
+    addRegexToken('Hmm', match3to4);
+    addRegexToken('Hmmss', match5to6);
+    addParseToken(['H', 'HH'], HOUR);
+    addParseToken(['k', 'kk'], function (input, array, config) {
+        const kInput = toInt(input);
+        array[HOUR] = kInput === 24 ? 0 : kInput;
+        return config;
+    });
+    addParseToken(['a', 'A'], function (input, array, config) {
+        config._isPm = config._locale.isPM(input);
+        config._meridiem = input;
+        return config;
+    });
+    addParseToken(['h', 'hh'], function (input, array, config) {
+        array[HOUR] = toInt(input);
+        getParsingFlags(config).bigHour = true;
+        return config;
+    });
+    addParseToken('hmm', function (input, array, config) {
+        const pos = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos));
+        array[MINUTE] = toInt(input.substr(pos));
+        getParsingFlags(config).bigHour = true;
+        return config;
+    });
+    addParseToken('hmmss', function (input, array, config) {
+        const pos1 = input.length - 4;
+        const pos2 = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos1));
+        array[MINUTE] = toInt(input.substr(pos1, 2));
+        array[SECOND] = toInt(input.substr(pos2));
+        getParsingFlags(config).bigHour = true;
+        return config;
+    });
+    addParseToken('Hmm', function (input, array, config) {
+        const pos = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos));
+        array[MINUTE] = toInt(input.substr(pos));
+        return config;
+    });
+    addParseToken('Hmmss', function (input, array, config) {
+        const pos1 = input.length - 4;
+        const pos2 = input.length - 2;
+        array[HOUR] = toInt(input.substr(0, pos1));
+        array[MINUTE] = toInt(input.substr(pos1, 2));
+        array[SECOND] = toInt(input.substr(pos2));
+        return config;
+    });
 }
-addRegexToken('a', matchMeridiem);
-addRegexToken('A', matchMeridiem);
-addRegexToken('H', match1to2);
-addRegexToken('h', match1to2);
-addRegexToken('k', match1to2);
-addRegexToken('HH', match1to2, match2);
-addRegexToken('hh', match1to2, match2);
-addRegexToken('kk', match1to2, match2);
-addRegexToken('hmm', match3to4);
-addRegexToken('hmmss', match5to6);
-addRegexToken('Hmm', match3to4);
-addRegexToken('Hmmss', match5to6);
-addParseToken(['H', 'HH'], HOUR);
-addParseToken(['k', 'kk'], function (input, array, config) {
-    const kInput = toInt(input);
-    array[HOUR] = kInput === 24 ? 0 : kInput;
-    return config;
-});
-addParseToken(['a', 'A'], function (input, array, config) {
-    config._isPm = config._locale.isPM(input);
-    config._meridiem = input;
-    return config;
-});
-addParseToken(['h', 'hh'], function (input, array, config) {
-    array[HOUR] = toInt(input);
-    getParsingFlags(config).bigHour = true;
-    return config;
-});
-addParseToken('hmm', function (input, array, config) {
-    const pos = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos));
-    array[MINUTE] = toInt(input.substr(pos));
-    getParsingFlags(config).bigHour = true;
-    return config;
-});
-addParseToken('hmmss', function (input, array, config) {
-    const pos1 = input.length - 4;
-    const pos2 = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos1));
-    array[MINUTE] = toInt(input.substr(pos1, 2));
-    array[SECOND] = toInt(input.substr(pos2));
-    getParsingFlags(config).bigHour = true;
-    return config;
-});
-addParseToken('Hmm', function (input, array, config) {
-    const pos = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos));
-    array[MINUTE] = toInt(input.substr(pos));
-    return config;
-});
-addParseToken('Hmmss', function (input, array, config) {
-    const pos1 = input.length - 4;
-    const pos2 = input.length - 2;
-    array[HOUR] = toInt(input.substr(0, pos1));
-    array[MINUTE] = toInt(input.substr(pos1, 2));
-    array[SECOND] = toInt(input.substr(pos2));
-    return config;
-});
 
 // tslint:disable:no-bitwise
-addFormatToken('S', null, null, function (date, opts) {
-    return (~~(getMilliseconds(date, opts.isUTC) / 100)).toString(10);
-});
-addFormatToken(null, ['SS', 2, false], null, function (date, opts) {
-    return (~~(getMilliseconds(date, opts.isUTC) / 10)).toString(10);
-});
-addFormatToken(null, ['SSS', 3, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC)).toString(10);
-});
-addFormatToken(null, ['SSSS', 4, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 10).toString(10);
-});
-addFormatToken(null, ['SSSSS', 5, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 100).toString(10);
-});
-addFormatToken(null, ['SSSSSS', 6, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 1000).toString(10);
-});
-addFormatToken(null, ['SSSSSSS', 7, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 10000).toString(10);
-});
-addFormatToken(null, ['SSSSSSSS', 8, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 100000).toString(10);
-});
-addFormatToken(null, ['SSSSSSSSS', 9, false], null, function (date, opts) {
-    return (getMilliseconds(date, opts.isUTC) * 1000000).toString(10);
-});
-// ALIASES
-addUnitAlias('millisecond', 'ms');
-// PARSING
-addRegexToken('S', match1to3, match1);
-addRegexToken('SS', match1to3, match2);
-addRegexToken('SSS', match1to3, match3);
-let token;
-for (token = 'SSSS'; token.length <= 9; token += 'S') {
-    addRegexToken(token, matchUnsigned);
+function initMillisecond() {
+    addFormatToken('S', null, null, function (date, opts) {
+        return (~~(getMilliseconds(date, opts.isUTC) / 100)).toString(10);
+    });
+    addFormatToken(null, ['SS', 2, false], null, function (date, opts) {
+        return (~~(getMilliseconds(date, opts.isUTC) / 10)).toString(10);
+    });
+    addFormatToken(null, ['SSS', 3, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC)).toString(10);
+    });
+    addFormatToken(null, ['SSSS', 4, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 10).toString(10);
+    });
+    addFormatToken(null, ['SSSSS', 5, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 100).toString(10);
+    });
+    addFormatToken(null, ['SSSSSS', 6, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 1000).toString(10);
+    });
+    addFormatToken(null, ['SSSSSSS', 7, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 10000).toString(10);
+    });
+    addFormatToken(null, ['SSSSSSSS', 8, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 100000).toString(10);
+    });
+    addFormatToken(null, ['SSSSSSSSS', 9, false], null, function (date, opts) {
+        return (getMilliseconds(date, opts.isUTC) * 1000000).toString(10);
+    });
+    // ALIASES
+    addUnitAlias('millisecond', 'ms');
+    // PARSING
+    addRegexToken('S', match1to3, match1);
+    addRegexToken('SS', match1to3, match2);
+    addRegexToken('SSS', match1to3, match3);
+    let token;
+    for (token = 'SSSS'; token.length <= 9; token += 'S') {
+        addRegexToken(token, matchUnsigned);
+    }
+    function parseMs(input, array, config) {
+        array[MILLISECOND] = toInt(parseFloat(`0.${input}`) * 1000);
+        return config;
+    }
+    for (token = 'S'; token.length <= 9; token += 'S') {
+        addParseToken(token, parseMs);
+    }
+    // MOMENTS
 }
-function parseMs(input, array, config) {
-    array[MILLISECOND] = toInt(parseFloat(`0.${input}`) * 1000);
-    return config;
-}
-for (token = 'S'; token.length <= 9; token += 'S') {
-    addParseToken(token, parseMs);
-}
-// MOMENTS
 
-// FORMATTING
-addFormatToken('m', ['mm', 2, false], null, function (date, opts) {
-    return getMinutes(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias('minute', 'm');
-// PARSING
-addRegexToken('m', match1to2);
-addRegexToken('mm', match1to2, match2);
-addParseToken(['m', 'mm'], MINUTE);
+function initMinute() {
+    // FORMATTING
+    addFormatToken('m', ['mm', 2, false], null, function (date, opts) {
+        return getMinutes(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('minute', 'm');
+    // PARSING
+    addRegexToken('m', match1to2);
+    addRegexToken('mm', match1to2, match2);
+    addParseToken(['m', 'mm'], MINUTE);
+}
 
 // tslint:disable:no-bitwise max-line-length
 function addOffsetFormatToken(token, separator) {
@@ -1242,16 +1259,18 @@ function addOffsetFormatToken(token, separator) {
         return sign + zeroFill(~~(offset / 60), 2) + separator + zeroFill(~~(offset) % 60, 2);
     });
 }
-addOffsetFormatToken('Z', ':');
-addOffsetFormatToken('ZZ', '');
-// PARSING
-addRegexToken('Z', matchShortOffset);
-addRegexToken('ZZ', matchShortOffset);
-addParseToken(['Z', 'ZZ'], function (input, array, config) {
-    config._useUTC = true;
-    config._tzm = offsetFromString(matchShortOffset, input);
-    return config;
-});
+function initOffset() {
+    addOffsetFormatToken('Z', ':');
+    addOffsetFormatToken('ZZ', '');
+    // PARSING
+    addRegexToken('Z', matchShortOffset);
+    addRegexToken('ZZ', matchShortOffset);
+    addParseToken(['Z', 'ZZ'], function (input, array, config) {
+        config._useUTC = true;
+        config._tzm = offsetFromString(matchShortOffset, input);
+        return config;
+    });
+}
 // HELPERS
 // timezone chunker
 // '+10:00' > ['10',  '00']
@@ -1343,18 +1362,21 @@ export function isUtc() {
   return this.isValid() ? this._isUTC && this._offset === 0 : false;
 }*/
 
-// FORMATTING
-addFormatToken('Q', null, 'Qo', function (date, opts) {
-    return getQuarter(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias('quarter', 'Q');
-// PARSING
-addRegexToken('Q', match1);
-addParseToken('Q', function (input, array, config) {
-    array[MONTH] = (toInt(input) - 1) * 3;
-    return config;
-});
+function initQuarter() {
+    // FORMATTING
+    addFormatToken('Q', null, 'Qo', function (date, opts) {
+        return getQuarter(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('quarter', 'Q');
+    // PARSING
+    addRegexToken('Q', match1);
+    addParseToken('Q', function (input, array, config) {
+        array[MONTH] = (toInt(input) - 1) * 3;
+        return config;
+    });
+}
 // MOMENTS
 function getQuarter(date, isUTC = false) {
     return Math.ceil((getMonth(date, isUTC) + 1) / 3);
@@ -1365,55 +1387,70 @@ function getQuarter(date, isUTC = false) {
 //     : this.month((input - 1) * 3 + this.month() % 3);
 // }
 
-// FORMATTING
-addFormatToken('s', ['ss', 2, false], null, function (date, opts) {
-    return getSeconds(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias('second', 's');
-// PARSING
-addRegexToken('s', match1to2);
-addRegexToken('ss', match1to2, match2);
-addParseToken(['s', 'ss'], SECOND);
+function initSecond() {
+    // FORMATTING
+    addFormatToken('s', ['ss', 2, false], null, function (date, opts) {
+        return getSeconds(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('second', 's');
+    // PARSING
+    addRegexToken('s', match1to2);
+    addRegexToken('ss', match1to2, match2);
+    addParseToken(['s', 'ss'], SECOND);
+}
+
+function initTimestamp() {
+    // FORMATTING
+    addFormatToken('X', null, null, function (date) {
+        return unix(date)
+            .toString(10);
+    });
+    addFormatToken('x', null, null, function (date) {
+        return date.valueOf()
+            .toString(10);
+    });
+    // PARSING
+    addRegexToken('x', matchSigned);
+    addRegexToken('X', matchTimestamp);
+    addParseToken('X', function (input, array, config) {
+        config._d = new Date(parseFloat(input) * 1000);
+        return config;
+    });
+    addParseToken('x', function (input, array, config) {
+        config._d = new Date(toInt(input));
+        return config;
+    });
+}
 
 // FORMATTING
-addFormatToken('X', null, null, function (date) {
-    return unix(date).toString(10);
-});
-addFormatToken('x', null, null, function (date) {
-    return date.valueOf().toString(10);
-});
-// PARSING
-addRegexToken('x', matchSigned);
-addRegexToken('X', matchTimestamp);
-addParseToken('X', function (input, array, config) {
-    config._d = new Date(parseFloat(input) * 1000);
-    return config;
-});
-addParseToken('x', function (input, array, config) {
-    config._d = new Date(toInt(input));
-    return config;
-});
-
-// FORMATTING
-addFormatToken('w', ['ww', 2, false], 'wo', function (date, opts) {
-    return getWeek(date, opts.locale).toString(10);
-});
-addFormatToken('W', ['WW', 2, false], 'Wo', function (date) {
-    return getISOWeek(date).toString(10);
-});
-// ALIASES
-addUnitAlias('week', 'w');
-addUnitAlias('isoWeek', 'W');
-// PARSING
-addRegexToken('w', match1to2);
-addRegexToken('ww', match1to2, match2);
-addRegexToken('W', match1to2);
-addRegexToken('WW', match1to2, match2);
-addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
-    week[token.substr(0, 1)] = toInt(input);
-    return config;
-});
+function initWeek() {
+    addFormatToken('w', ['ww', 2, false], 'wo', function (date, opts) {
+        return getWeek(date, opts.locale)
+            .toString(10);
+    });
+    addFormatToken('W', ['WW', 2, false], 'Wo', function (date) {
+        return getISOWeek(date)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('week', 'w');
+    addUnitAlias('isoWeek', 'W');
+    // PARSING
+    addRegexToken('w', match1to2);
+    addRegexToken('ww', match1to2, match2);
+    addRegexToken('W', match1to2);
+    addRegexToken('WW', match1to2, match2);
+    addWeekParseToken(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
+        week[token.substr(0, 1)] = toInt(input);
+        return config;
+    });
+    // export function getSetWeek (input) {
+    //   var week = this.localeData().week(this);
+    //   return input == null ? week : this.add((input - week) * 7, 'd');
+    // }
+}
 function getWeek(date, locale = getLocale(), isUTC) {
     return locale.week(date, isUTC);
 }
@@ -1422,14 +1459,40 @@ function getISOWeek(date, isUTC) {
 }
 
 // FORMATTING
-addFormatToken(null, ['gg', 2, false], null, function (date, opts) {
-    // return this.weekYear() % 100;
-    return (getWeekYear(date, opts.locale) % 100).toString();
-});
-addFormatToken(null, ['GG', 2, false], null, function (date) {
-    // return this.isoWeekYear() % 100;
-    return (getISOWeekYear(date) % 100).toString();
-});
+function initWeekYear() {
+    addFormatToken(null, ['gg', 2, false], null, function (date, opts) {
+        // return this.weekYear() % 100;
+        return (getWeekYear(date, opts.locale) % 100).toString();
+    });
+    addFormatToken(null, ['GG', 2, false], null, function (date) {
+        // return this.isoWeekYear() % 100;
+        return (getISOWeekYear(date) % 100).toString();
+    });
+    addWeekYearFormatToken('gggg', _getWeekYearFormatCb);
+    addWeekYearFormatToken('ggggg', _getWeekYearFormatCb);
+    addWeekYearFormatToken('GGGG', _getISOWeekYearFormatCb);
+    addWeekYearFormatToken('GGGGG', _getISOWeekYearFormatCb);
+    // ALIASES
+    addUnitAlias('weekYear', 'gg');
+    addUnitAlias('isoWeekYear', 'GG');
+    // PARSING
+    addRegexToken('G', matchSigned);
+    addRegexToken('g', matchSigned);
+    addRegexToken('GG', match1to2, match2);
+    addRegexToken('gg', match1to2, match2);
+    addRegexToken('GGGG', match1to4, match4);
+    addRegexToken('gggg', match1to4, match4);
+    addRegexToken('GGGGG', match1to6, match6);
+    addRegexToken('ggggg', match1to6, match6);
+    addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
+        week[token.substr(0, 2)] = toInt(input);
+        return config;
+    });
+    addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
+        week[token] = parseTwoDigitYear(input);
+        return config;
+    });
+}
 function addWeekYearFormatToken(token, getter) {
     addFormatToken(null, [token, token.length, false], null, getter);
 }
@@ -1439,30 +1502,6 @@ function _getWeekYearFormatCb(date, opts) {
 function _getISOWeekYearFormatCb(date) {
     return getISOWeekYear(date).toString();
 }
-addWeekYearFormatToken('gggg', _getWeekYearFormatCb);
-addWeekYearFormatToken('ggggg', _getWeekYearFormatCb);
-addWeekYearFormatToken('GGGG', _getISOWeekYearFormatCb);
-addWeekYearFormatToken('GGGGG', _getISOWeekYearFormatCb);
-// ALIASES
-addUnitAlias('weekYear', 'gg');
-addUnitAlias('isoWeekYear', 'GG');
-// PARSING
-addRegexToken('G', matchSigned);
-addRegexToken('g', matchSigned);
-addRegexToken('GG', match1to2, match2);
-addRegexToken('gg', match1to2, match2);
-addRegexToken('GGGG', match1to4, match4);
-addRegexToken('gggg', match1to4, match4);
-addRegexToken('GGGGG', match1to6, match6);
-addRegexToken('ggggg', match1to6, match6);
-addWeekParseToken(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
-    week[token.substr(0, 2)] = toInt(input);
-    return config;
-});
-addWeekParseToken(['gg', 'GG'], function (input, week, config, token) {
-    week[token] = parseTwoDigitYear(input);
-    return config;
-});
 function getWeekYear(date, locale = getLocale(), isUTC) {
     return weekOfYear(date, locale.firstDayOfWeek(), locale.firstDayOfYear(), isUTC).year;
 }
@@ -2078,58 +2117,63 @@ function addSubtract(date, duration, isAdding, isUTC) {
     // }
 }
 
-// FORMATTING
-addFormatToken('d', null, 'do', function (date, opts) {
-    return getDay(date, opts.isUTC).toString(10);
-});
-addFormatToken('dd', null, null, function (date, opts) {
-    return opts.locale.weekdaysMin(date, opts.format, opts.isUTC);
-});
-addFormatToken('ddd', null, null, function (date, opts) {
-    return opts.locale.weekdaysShort(date, opts.format, opts.isUTC);
-});
-addFormatToken('dddd', null, null, function (date, opts) {
-    return opts.locale.weekdays(date, opts.format, opts.isUTC);
-});
-addFormatToken('e', null, null, function (date, opts) {
-    return getLocaleDayOfWeek(date, opts.locale, opts.isUTC).toString(10);
-    // return getDay(date, opts.isUTC).toString(10);
-});
-addFormatToken('E', null, null, function (date, opts) {
-    return getISODayOfWeek(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias('day', 'd');
-addUnitAlias('weekday', 'e');
-addUnitAlias('isoWeekday', 'E');
-// PARSING
-addRegexToken('d', match1to2);
-addRegexToken('e', match1to2);
-addRegexToken('E', match1to2);
-addRegexToken('dd', function (isStrict, locale) {
-    return locale.weekdaysMinRegex(isStrict);
-});
-addRegexToken('ddd', function (isStrict, locale) {
-    return locale.weekdaysShortRegex(isStrict);
-});
-addRegexToken('dddd', function (isStrict, locale) {
-    return locale.weekdaysRegex(isStrict);
-});
-addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
-    const weekday = config._locale.weekdaysParse(input, token, config._strict);
-    // if we didn't get a weekday name, mark the date as invalid
-    if (weekday != null) {
-        week.d = weekday;
-    }
-    else {
-        getParsingFlags(config).invalidWeekday = !!input;
-    }
-    return config;
-});
-addWeekParseToken(['d', 'e', 'E'], function (input, week, config, token) {
-    week[token] = toInt(input);
-    return config;
-});
+function initDayOfWeek() {
+    // FORMATTING
+    addFormatToken('d', null, 'do', function (date, opts) {
+        return getDay(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken('dd', null, null, function (date, opts) {
+        return opts.locale.weekdaysMin(date, opts.format, opts.isUTC);
+    });
+    addFormatToken('ddd', null, null, function (date, opts) {
+        return opts.locale.weekdaysShort(date, opts.format, opts.isUTC);
+    });
+    addFormatToken('dddd', null, null, function (date, opts) {
+        return opts.locale.weekdays(date, opts.format, opts.isUTC);
+    });
+    addFormatToken('e', null, null, function (date, opts) {
+        return getLocaleDayOfWeek(date, opts.locale, opts.isUTC)
+            .toString(10);
+        // return getDay(date, opts.isUTC).toString(10);
+    });
+    addFormatToken('E', null, null, function (date, opts) {
+        return getISODayOfWeek(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('day', 'd');
+    addUnitAlias('weekday', 'e');
+    addUnitAlias('isoWeekday', 'E');
+    // PARSING
+    addRegexToken('d', match1to2);
+    addRegexToken('e', match1to2);
+    addRegexToken('E', match1to2);
+    addRegexToken('dd', function (isStrict, locale) {
+        return locale.weekdaysMinRegex(isStrict);
+    });
+    addRegexToken('ddd', function (isStrict, locale) {
+        return locale.weekdaysShortRegex(isStrict);
+    });
+    addRegexToken('dddd', function (isStrict, locale) {
+        return locale.weekdaysRegex(isStrict);
+    });
+    addWeekParseToken(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
+        const weekday = config._locale.weekdaysParse(input, token, config._strict);
+        // if we didn't get a weekday name, mark the date as invalid
+        if (weekday != null) {
+            week.d = weekday;
+        }
+        else {
+            getParsingFlags(config).invalidWeekday = !!input;
+        }
+        return config;
+    });
+    addWeekParseToken(['d', 'e', 'E'], function (input, week, config, token) {
+        week[token] = toInt(input);
+        return config;
+    });
+}
 // HELPERS
 function parseWeekday(input, locale) {
     if (!isString(input)) {
@@ -2233,18 +2277,21 @@ function endOf(date, unit, isUTC) {
     return res;
 }
 
-// FORMATTING
-addFormatToken('DDD', ['DDDD', 3, false], 'DDDo', function (date) {
-    return getDayOfYear(date).toString(10);
-});
-// ALIASES
-addUnitAlias('dayOfYear', 'DDD');
-addRegexToken('DDD', match1to3);
-addRegexToken('DDDD', match3);
-addParseToken(['DDD', 'DDDD'], function (input, array, config) {
-    config._dayOfYear = toInt(input);
-    return config;
-});
+function initDayOfYear() {
+    // FORMATTING
+    addFormatToken('DDD', ['DDDD', 3, false], 'DDDo', function (date) {
+        return getDayOfYear(date)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias('dayOfYear', 'DDD');
+    addRegexToken('DDD', match1to3);
+    addRegexToken('DDDD', match3);
+    addParseToken(['DDD', 'DDDD'], function (input, array, config) {
+        config._dayOfYear = toInt(input);
+        return config;
+    });
+}
 function getDayOfYear(date, isUTC) {
     const date1 = +startOf(date, 'day', isUTC);
     const date2 = +startOf(date, 'year', isUTC);
@@ -2898,6 +2945,17 @@ function compareArrays(array1, array2, dontConvert) {
     return diffs + lengthDiff;
 }
 
+// todo: add support for timezones
+function initTimezone() {
+    // FORMATTING
+    addFormatToken('z', null, null, function (date, opts) {
+        return opts.isUTC ? 'UTC' : '';
+    });
+    addFormatToken('zz', null, null, function (date, opts) {
+        return opts.isUTC ? 'Coordinated Universal Time' : '';
+    });
+}
+
 const locales = {};
 const localeFamilies = {};
 let globalLocale;
@@ -3066,6 +3124,7 @@ function updateLocale(name, config) {
 }
 // returns locale data
 function getLocale(key) {
+    setDefaultLocale();
     if (!key) {
         return globalLocale;
     }
@@ -3076,17 +3135,36 @@ function getLocale(key) {
 function listLocales() {
     return Object.keys(locales);
 }
-// define default locale
-getSetGlobalLocale('en', {
-    dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
-    ordinal(num) {
-        const b = num % 10;
-        const output = toInt((num % 100) / 10) === 1
-            ? 'th'
-            : b === 1 ? 'st' : b === 2 ? 'nd' : b === 3 ? 'rd' : 'th';
-        return num + output;
+function setDefaultLocale() {
+    if (locales[`en`]) {
+        return undefined;
     }
-});
+    getSetGlobalLocale('en', {
+        dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
+        ordinal(num) {
+            const b = num % 10;
+            const output = toInt((num % 100) / 10) === 1
+                ? 'th'
+                : b === 1 ? 'st' : b === 2 ? 'nd' : b === 3 ? 'rd' : 'th';
+            return num + output;
+        }
+    });
+    initWeek();
+    initWeekYear();
+    initYear();
+    initTimezone();
+    initTimestamp();
+    initSecond();
+    initQuarter();
+    initOffset();
+    initMonth();
+    initMinute();
+    initMillisecond();
+    initHour();
+    initDayOfYear();
+    initDayOfWeek();
+    initDayOfMonth();
+}
 
 /*tslint:disable */
 /**
@@ -5516,23 +5594,29 @@ export function getPrioritizedUnits(unitsObj) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-// FORMATTING
-addFormatToken$1('D', ['DD', 2, false], 'Do', function (date, opts) {
-    return getDate$1(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias$1('date', 'D');
-// PARSING
-addRegexToken$1('D', match1to2$1);
-addRegexToken$1('DD', match1to2$1, match2$1);
-addRegexToken$1('Do', function (isStrict, locale) {
-    return locale._dayOfMonthOrdinalParse || locale._ordinalParse;
-});
-addParseToken$1(['D', 'DD'], DATE$1);
-addParseToken$1('Do', function (input, array, config) {
-    array[DATE$1] = toInt$1(input.match(match1to2$1)[0]);
-    return config;
-});
+/**
+ * @return {?}
+ */
+function initDayOfMonth$1() {
+    // FORMATTING
+    addFormatToken$1('D', ['DD', 2, false], 'Do', function (date, opts) {
+        return getDate$1(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('date', 'D');
+    // PARSING
+    addRegexToken$1('D', match1to2$1);
+    addRegexToken$1('DD', match1to2$1, match2$1);
+    addRegexToken$1('Do', function (isStrict, locale) {
+        return locale._dayOfMonthOrdinalParse || locale._ordinalParse;
+    });
+    addParseToken$1(['D', 'DD'], DATE$1);
+    addParseToken$1('Do', function (input, array, config) {
+        array[DATE$1] = toInt$1(input.match(match1to2$1)[0]);
+        return config;
+    });
+}
 
 /**
  * @fileoverview added by tsickle
@@ -5583,37 +5667,42 @@ function getParsingFlags$1(config) {
 function getYear$1(date, opts) {
     return getFullYear$1(date, opts.isUTC).toString();
 }
-addFormatToken$1('Y', null, null, function (date, opts) {
-    var /** @type {?} */ y = getFullYear$1(date, opts.isUTC);
-    return y <= 9999 ? y.toString(10) : "+" + y;
-});
-addFormatToken$1(null, ['YY', 2, false], null, function (date, opts) {
-    return (getFullYear$1(date, opts.isUTC) % 100).toString(10);
-});
-addFormatToken$1(null, ['YYYY', 4, false], null, getYear$1);
-addFormatToken$1(null, ['YYYYY', 5, false], null, getYear$1);
-addFormatToken$1(null, ['YYYYYY', 6, true], null, getYear$1);
-// ALIASES
-addUnitAlias$1('year', 'y');
-// PARSING
-addRegexToken$1('Y', matchSigned$1);
-addRegexToken$1('YY', match1to2$1, match2$1);
-addRegexToken$1('YYYY', match1to4$1, match4$1);
-addRegexToken$1('YYYYY', match1to6$1, match6$1);
-addRegexToken$1('YYYYYY', match1to6$1, match6$1);
-addParseToken$1(['YYYYY', 'YYYYYY'], YEAR$1);
-addParseToken$1('YYYY', function (input, array, config) {
-    array[YEAR$1] = input.length === 2 ? parseTwoDigitYear$1(input) : toInt$1(input);
-    return config;
-});
-addParseToken$1('YY', function (input, array, config) {
-    array[YEAR$1] = parseTwoDigitYear$1(input);
-    return config;
-});
-addParseToken$1('Y', function (input, array, config) {
-    array[YEAR$1] = parseInt(input, 10);
-    return config;
-});
+/**
+ * @return {?}
+ */
+function initYear$1() {
+    addFormatToken$1('Y', null, null, function (date, opts) {
+        var /** @type {?} */ y = getFullYear$1(date, opts.isUTC);
+        return y <= 9999 ? y.toString(10) : "+" + y;
+    });
+    addFormatToken$1(null, ['YY', 2, false], null, function (date, opts) {
+        return (getFullYear$1(date, opts.isUTC) % 100).toString(10);
+    });
+    addFormatToken$1(null, ['YYYY', 4, false], null, getYear$1);
+    addFormatToken$1(null, ['YYYYY', 5, false], null, getYear$1);
+    addFormatToken$1(null, ['YYYYYY', 6, true], null, getYear$1);
+    // ALIASES
+    addUnitAlias$1('year', 'y');
+    // PARSING
+    addRegexToken$1('Y', matchSigned$1);
+    addRegexToken$1('YY', match1to2$1, match2$1);
+    addRegexToken$1('YYYY', match1to4$1, match4$1);
+    addRegexToken$1('YYYYY', match1to6$1, match6$1);
+    addRegexToken$1('YYYYYY', match1to6$1, match6$1);
+    addParseToken$1(['YYYYY', 'YYYYYY'], YEAR$1);
+    addParseToken$1('YYYY', function (input, array, config) {
+        array[YEAR$1] = input.length === 2 ? parseTwoDigitYear$1(input) : toInt$1(input);
+        return config;
+    });
+    addParseToken$1('YY', function (input, array, config) {
+        array[YEAR$1] = parseTwoDigitYear$1(input);
+        return config;
+    });
+    addParseToken$1('Y', function (input, array, config) {
+        array[YEAR$1] = parseInt(input, 10);
+        return config;
+    });
+}
 /**
  * @param {?} input
  * @return {?}
@@ -5655,42 +5744,47 @@ function daysInMonth$1$1(year, month) {
         ? isLeapYear$1(_year) ? 29 : 28
         : (31 - modMonth % 7 % 2);
 }
-// FORMATTING
-addFormatToken$1('M', ['MM', 2, false], 'Mo', function (date, opts) {
-    return (getMonth$1(date, opts.isUTC) + 1).toString(10);
-});
-addFormatToken$1('MMM', null, null, function (date, opts) {
-    return opts.locale.monthsShort(date, opts.format, opts.isUTC);
-});
-addFormatToken$1('MMMM', null, null, function (date, opts) {
-    return opts.locale.months(date, opts.format, opts.isUTC);
-});
-// ALIASES
-addUnitAlias$1('month', 'M');
-// PARSING
-addRegexToken$1('M', match1to2$1);
-addRegexToken$1('MM', match1to2$1, match2$1);
-addRegexToken$1('MMM', function (isStrict, locale) {
-    return locale.monthsShortRegex(isStrict);
-});
-addRegexToken$1('MMMM', function (isStrict, locale) {
-    return locale.monthsRegex(isStrict);
-});
-addParseToken$1(['M', 'MM'], function (input, array, config) {
-    array[MONTH$1] = toInt$1(input) - 1;
-    return config;
-});
-addParseToken$1(['MMM', 'MMMM'], function (input, array, config, token) {
-    var /** @type {?} */ month = config._locale.monthsParse(input, token, config._strict);
-    // if we didn't find a month name, mark the date as invalid.
-    if (month != null) {
-        array[MONTH$1] = month;
-    }
-    else {
-        getParsingFlags$1(config).invalidMonth = !!input;
-    }
-    return config;
-});
+/**
+ * @return {?}
+ */
+function initMonth$1() {
+    // FORMATTING
+    addFormatToken$1('M', ['MM', 2, false], 'Mo', function (date, opts) {
+        return (getMonth$1(date, opts.isUTC) + 1).toString(10);
+    });
+    addFormatToken$1('MMM', null, null, function (date, opts) {
+        return opts.locale.monthsShort(date, opts.format, opts.isUTC);
+    });
+    addFormatToken$1('MMMM', null, null, function (date, opts) {
+        return opts.locale.months(date, opts.format, opts.isUTC);
+    });
+    // ALIASES
+    addUnitAlias$1('month', 'M');
+    // PARSING
+    addRegexToken$1('M', match1to2$1);
+    addRegexToken$1('MM', match1to2$1, match2$1);
+    addRegexToken$1('MMM', function (isStrict, locale) {
+        return locale.monthsShortRegex(isStrict);
+    });
+    addRegexToken$1('MMMM', function (isStrict, locale) {
+        return locale.monthsRegex(isStrict);
+    });
+    addParseToken$1(['M', 'MM'], function (input, array, config) {
+        array[MONTH$1] = toInt$1(input) - 1;
+        return config;
+    });
+    addParseToken$1(['MMM', 'MMMM'], function (input, array, config, token) {
+        var /** @type {?} */ month = config._locale.monthsParse(input, token, config._strict);
+        // if we didn't find a month name, mark the date as invalid.
+        if (month != null) {
+            array[MONTH$1] = month;
+        }
+        else {
+            getParsingFlags$1(config).invalidMonth = !!input;
+        }
+        return config;
+    });
+}
 
 /**
  * @fileoverview added by tsickle
@@ -5890,18 +5984,24 @@ function endOf$1(date, unit, isUTC) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-// FORMATTING
-addFormatToken$1('DDD', ['DDDD', 3, false], 'DDDo', function (date) {
-    return getDayOfYear$1(date).toString(10);
-});
-// ALIASES
-addUnitAlias$1('dayOfYear', 'DDD');
-addRegexToken$1('DDD', match1to3$1);
-addRegexToken$1('DDDD', match3$1);
-addParseToken$1(['DDD', 'DDDD'], function (input, array, config) {
-    config._dayOfYear = toInt$1(input);
-    return config;
-});
+/**
+ * @return {?}
+ */
+function initDayOfYear$1() {
+    // FORMATTING
+    addFormatToken$1('DDD', ['DDDD', 3, false], 'DDDo', function (date) {
+        return getDayOfYear$1(date)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('dayOfYear', 'DDD');
+    addRegexToken$1('DDD', match1to3$1);
+    addRegexToken$1('DDDD', match3$1);
+    addParseToken$1(['DDD', 'DDDD'], function (input, array, config) {
+        config._dayOfYear = toInt$1(input);
+        return config;
+    });
+}
 /**
  * @param {?} date
  * @param {?=} isUTC
@@ -6925,6 +7025,598 @@ function compareArrays$1(array1, array2, dontConvert) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+/**
+ * @return {?}
+ */
+function initWeek$1() {
+    addFormatToken$1('w', ['ww', 2, false], 'wo', function (date, opts) {
+        return getWeek$1(date, opts.locale)
+            .toString(10);
+    });
+    addFormatToken$1('W', ['WW', 2, false], 'Wo', function (date) {
+        return getISOWeek$1(date)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('week', 'w');
+    addUnitAlias$1('isoWeek', 'W');
+    // PARSING
+    addRegexToken$1('w', match1to2$1);
+    addRegexToken$1('ww', match1to2$1, match2$1);
+    addRegexToken$1('W', match1to2$1);
+    addRegexToken$1('WW', match1to2$1, match2$1);
+    addWeekParseToken$1(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
+        week[token.substr(0, 1)] = toInt$1(input);
+        return config;
+    });
+    // export function getSetWeek (input) {
+    //   var week = this.localeData().week(this);
+    //   return input == null ? week : this.add((input - week) * 7, 'd');
+    // }
+}
+/**
+ * @param {?} date
+ * @param {?=} locale
+ * @param {?=} isUTC
+ * @return {?}
+ */
+function getWeek$1(date, locale, isUTC) {
+    if (locale === void 0) { locale = getLocale$1(); }
+    return locale.week(date, isUTC);
+}
+/**
+ * @param {?} date
+ * @param {?=} isUTC
+ * @return {?}
+ */
+function getISOWeek$1(date, isUTC) {
+    return weekOfYear$1(date, 1, 4, isUTC).week;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initWeekYear$1() {
+    addFormatToken$1(null, ['gg', 2, false], null, function (date, opts) {
+        // return this.weekYear() % 100;
+        return (getWeekYear$1(date, opts.locale) % 100).toString();
+    });
+    addFormatToken$1(null, ['GG', 2, false], null, function (date) {
+        // return this.isoWeekYear() % 100;
+        return (getISOWeekYear$1(date) % 100).toString();
+    });
+    addWeekYearFormatToken$1('gggg', _getWeekYearFormatCb$1);
+    addWeekYearFormatToken$1('ggggg', _getWeekYearFormatCb$1);
+    addWeekYearFormatToken$1('GGGG', _getISOWeekYearFormatCb$1);
+    addWeekYearFormatToken$1('GGGGG', _getISOWeekYearFormatCb$1);
+    // ALIASES
+    addUnitAlias$1('weekYear', 'gg');
+    addUnitAlias$1('isoWeekYear', 'GG');
+    // PARSING
+    addRegexToken$1('G', matchSigned$1);
+    addRegexToken$1('g', matchSigned$1);
+    addRegexToken$1('GG', match1to2$1, match2$1);
+    addRegexToken$1('gg', match1to2$1, match2$1);
+    addRegexToken$1('GGGG', match1to4$1, match4$1);
+    addRegexToken$1('gggg', match1to4$1, match4$1);
+    addRegexToken$1('GGGGG', match1to6$1, match6$1);
+    addRegexToken$1('ggggg', match1to6$1, match6$1);
+    addWeekParseToken$1(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
+        week[token.substr(0, 2)] = toInt$1(input);
+        return config;
+    });
+    addWeekParseToken$1(['gg', 'GG'], function (input, week, config, token) {
+        week[token] = parseTwoDigitYear$1(input);
+        return config;
+    });
+}
+/**
+ * @param {?} token
+ * @param {?} getter
+ * @return {?}
+ */
+function addWeekYearFormatToken$1(token, getter) {
+    addFormatToken$1(null, [token, token.length, false], null, getter);
+}
+/**
+ * @param {?} date
+ * @param {?} opts
+ * @return {?}
+ */
+function _getWeekYearFormatCb$1(date, opts) {
+    return getWeekYear$1(date, opts.locale).toString();
+}
+/**
+ * @param {?} date
+ * @return {?}
+ */
+function _getISOWeekYearFormatCb$1(date) {
+    return getISOWeekYear$1(date).toString();
+}
+/**
+ * @param {?} date
+ * @param {?=} locale
+ * @param {?=} isUTC
+ * @return {?}
+ */
+function getWeekYear$1(date, locale, isUTC) {
+    if (locale === void 0) { locale = getLocale$1(); }
+    return weekOfYear$1(date, locale.firstDayOfWeek(), locale.firstDayOfYear(), isUTC).year;
+}
+/**
+ * @param {?} date
+ * @param {?=} isUTC
+ * @return {?}
+ */
+function getISOWeekYear$1(date, isUTC) {
+    return weekOfYear$1(date, 1, 4, isUTC).year;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initTimezone$1() {
+    // FORMATTING
+    addFormatToken$1('z', null, null, function (date, opts) {
+        return opts.isUTC ? 'UTC' : '';
+    });
+    addFormatToken$1('zz', null, null, function (date, opts) {
+        return opts.isUTC ? 'Coordinated Universal Time' : '';
+    });
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initTimestamp$1() {
+    // FORMATTING
+    addFormatToken$1('X', null, null, function (date) {
+        return unix$1(date)
+            .toString(10);
+    });
+    addFormatToken$1('x', null, null, function (date) {
+        return date.valueOf()
+            .toString(10);
+    });
+    // PARSING
+    addRegexToken$1('x', matchSigned$1);
+    addRegexToken$1('X', matchTimestamp$1);
+    addParseToken$1('X', function (input, array, config) {
+        config._d = new Date(parseFloat(input) * 1000);
+        return config;
+    });
+    addParseToken$1('x', function (input, array, config) {
+        config._d = new Date(toInt$1(input));
+        return config;
+    });
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initSecond$1() {
+    // FORMATTING
+    addFormatToken$1('s', ['ss', 2, false], null, function (date, opts) {
+        return getSeconds$1(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('second', 's');
+    // PARSING
+    addRegexToken$1('s', match1to2$1);
+    addRegexToken$1('ss', match1to2$1, match2$1);
+    addParseToken$1(['s', 'ss'], SECOND$1);
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initQuarter$1() {
+    // FORMATTING
+    addFormatToken$1('Q', null, 'Qo', function (date, opts) {
+        return getQuarter$1(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('quarter', 'Q');
+    // PARSING
+    addRegexToken$1('Q', match1$1);
+    addParseToken$1('Q', function (input, array, config) {
+        array[MONTH$1] = (toInt$1(input) - 1) * 3;
+        return config;
+    });
+}
+/**
+ * @param {?} date
+ * @param {?=} isUTC
+ * @return {?}
+ */
+function getQuarter$1(date, isUTC) {
+    if (isUTC === void 0) { isUTC = false; }
+    return Math.ceil((getMonth$1(date, isUTC) + 1) / 3);
+}
+// export function getSetQuarter(input) {
+//   return input == null
+//     ? Math.ceil((this.month() + 1) / 3)
+//     : this.month((input - 1) * 3 + this.month() % 3);
+// }
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @param {?} token
+ * @param {?} separator
+ * @return {?}
+ */
+function addOffsetFormatToken$1(token, separator) {
+    addFormatToken$1(token, null, null, function (date, config) {
+        var /** @type {?} */ offset = getUTCOffset$1(date, { _isUTC: config.isUTC, _offset: config.offset });
+        var /** @type {?} */ sign = '+';
+        if (offset < 0) {
+            offset = -offset;
+            sign = '-';
+        }
+        return sign + zeroFill$1(~~(offset / 60), 2) + separator + zeroFill$1(~~(offset) % 60, 2);
+    });
+}
+/**
+ * @return {?}
+ */
+function initOffset$1() {
+    addOffsetFormatToken$1('Z', ':');
+    addOffsetFormatToken$1('ZZ', '');
+    // PARSING
+    addRegexToken$1('Z', matchShortOffset$1);
+    addRegexToken$1('ZZ', matchShortOffset$1);
+    addParseToken$1(['Z', 'ZZ'], function (input, array, config) {
+        config._useUTC = true;
+        config._tzm = offsetFromString$1(matchShortOffset$1, input);
+        return config;
+    });
+}
+// HELPERS
+// timezone chunker
+// '+10:00' > ['10',  '00']
+// '-1530'  > ['-15', '30']
+var /** @type {?} */ chunkOffset$1 = /([\+\-]|\d\d)/gi;
+/**
+ * @param {?} matcher
+ * @param {?} str
+ * @return {?}
+ */
+function offsetFromString$1(matcher, str) {
+    var /** @type {?} */ matches = (str || '').match(matcher);
+    if (matches === null) {
+        return null;
+    }
+    var /** @type {?} */ chunk = matches[matches.length - 1];
+    var /** @type {?} */ parts = chunk.match(chunkOffset$1) || ['-', '0', '0'];
+    var /** @type {?} */ minutes = parseInt(parts[1], 10) * 60 + toInt$1(parts[2]);
+    var /** @type {?} */ _min = parts[0] === '+' ? minutes : -minutes;
+    return minutes === 0 ? 0 : _min;
+}
+/**
+ * @param {?} input
+ * @param {?} date
+ * @param {?=} config
+ * @return {?}
+ */
+function cloneWithOffset$1(input, date, config) {
+    if (config === void 0) { config = {}; }
+    if (!config._isUTC) {
+        return input;
+    }
+    var /** @type {?} */ res = cloneDate$1(date);
+    // todo: input._d - res._d + ((res._offset || 0) - (input._offset || 0))*60000
+    var /** @type {?} */ offsetDiff = (config._offset || 0) * 60000;
+    var /** @type {?} */ diff = input.valueOf() - res.valueOf() + offsetDiff;
+    // Use low-level api, because this fn is low-level api.
+    res.setTime(res.valueOf() + diff);
+    // todo: add timezone handling
+    // hooks.updateOffset(res, false);
+    return res;
+}
+/**
+ * @param {?} date
+ * @return {?}
+ */
+function getDateOffset$1(date) {
+    // On Firefox.24 Date#getTimezoneOffset returns a floating point.
+    // https://github.com/moment/moment/pull/1871
+    return -Math.round(date.getTimezoneOffset() / 15) * 15;
+}
+/**
+ * @param {?} date
+ * @param {?=} config
+ * @return {?}
+ */
+function getUTCOffset$1(date, config) {
+    if (config === void 0) { config = {}; }
+    var /** @type {?} */ _offset = config._offset || 0;
+    return config._isUTC ? _offset : getDateOffset$1(date);
+}
+// DEPRECATED
+/*export function isDaylightSavingTimeShifted() {
+  if (!isUndefined(this._isDSTShifted)) {
+    return this._isDSTShifted;
+  }
+
+  const c = {};
+
+  copyConfig(c, this);
+  c = prepareConfig(c);
+
+  if (c._a) {
+    const other = c._isUTC ? createUTC(c._a) : createLocal(c._a);
+    this._isDSTShifted = this.isValid() &&
+      compareArrays(c._a, other.toArray()) > 0;
+  } else {
+    this._isDSTShifted = false;
+  }
+
+  return this._isDSTShifted;
+}*/
+// in Khronos
+/*export function isLocal() {
+  return this.isValid() ? !this._isUTC : false;
+}
+
+export function isUtcOffset() {
+  return this.isValid() ? this._isUTC : false;
+}
+
+export function isUtc() {
+  return this.isValid() ? this._isUTC && this._offset === 0 : false;
+}*/
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initMinute$1() {
+    // FORMATTING
+    addFormatToken$1('m', ['mm', 2, false], null, function (date, opts) {
+        return getMinutes$1(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('minute', 'm');
+    // PARSING
+    addRegexToken$1('m', match1to2$1);
+    addRegexToken$1('mm', match1to2$1, match2$1);
+    addParseToken$1(['m', 'mm'], MINUTE$1);
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initMillisecond$1() {
+    addFormatToken$1('S', null, null, function (date, opts) {
+        return (~~(getMilliseconds$1(date, opts.isUTC) / 100)).toString(10);
+    });
+    addFormatToken$1(null, ['SS', 2, false], null, function (date, opts) {
+        return (~~(getMilliseconds$1(date, opts.isUTC) / 10)).toString(10);
+    });
+    addFormatToken$1(null, ['SSS', 3, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC)).toString(10);
+    });
+    addFormatToken$1(null, ['SSSS', 4, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 10).toString(10);
+    });
+    addFormatToken$1(null, ['SSSSS', 5, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 100).toString(10);
+    });
+    addFormatToken$1(null, ['SSSSSS', 6, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 1000).toString(10);
+    });
+    addFormatToken$1(null, ['SSSSSSS', 7, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 10000).toString(10);
+    });
+    addFormatToken$1(null, ['SSSSSSSS', 8, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 100000).toString(10);
+    });
+    addFormatToken$1(null, ['SSSSSSSSS', 9, false], null, function (date, opts) {
+        return (getMilliseconds$1(date, opts.isUTC) * 1000000).toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('millisecond', 'ms');
+    // PARSING
+    addRegexToken$1('S', match1to3$1, match1$1);
+    addRegexToken$1('SS', match1to3$1, match2$1);
+    addRegexToken$1('SSS', match1to3$1, match3$1);
+    var /** @type {?} */ token;
+    for (token = 'SSSS'; token.length <= 9; token += 'S') {
+        addRegexToken$1(token, matchUnsigned$1);
+    }
+    /**
+     * @param {?} input
+     * @param {?} array
+     * @param {?} config
+     * @return {?}
+     */
+    function parseMs(input, array, config) {
+        array[MILLISECOND$1] = toInt$1(parseFloat("0." + input) * 1000);
+        return config;
+    }
+    for (token = 'S'; token.length <= 9; token += 'S') {
+        addParseToken$1(token, parseMs);
+    }
+    // MOMENTS
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @return {?}
+ */
+function initHour$1() {
+    /**
+     * @param {?} date
+     * @param {?} isUTC
+     * @return {?}
+     */
+    function hFormat(date, isUTC) {
+        return getHours$1(date, isUTC) % 12 || 12;
+    }
+    /**
+     * @param {?} date
+     * @param {?} isUTC
+     * @return {?}
+     */
+    function kFormat(date, isUTC) {
+        return getHours$1(date, isUTC) || 24;
+    }
+    addFormatToken$1('H', ['HH', 2, false], null, function (date, opts) {
+        return getHours$1(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken$1('h', ['hh', 2, false], null, function (date, opts) {
+        return hFormat(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken$1('k', ['kk', 2, false], null, function (date, opts) {
+        return kFormat(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken$1('hmm', null, null, function (date, opts) {
+        var /** @type {?} */ _h = hFormat(date, opts.isUTC);
+        var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
+        return "" + _h + _mm;
+    });
+    addFormatToken$1('hmmss', null, null, function (date, opts) {
+        var /** @type {?} */ _h = hFormat(date, opts.isUTC);
+        var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
+        var /** @type {?} */ _ss = zeroFill$1(getSeconds$1(date, opts.isUTC), 2);
+        return "" + _h + _mm + _ss;
+    });
+    addFormatToken$1('Hmm', null, null, function (date, opts) {
+        var /** @type {?} */ _H = getHours$1(date, opts.isUTC);
+        var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
+        return "" + _H + _mm;
+    });
+    addFormatToken$1('Hmmss', null, null, function (date, opts) {
+        var /** @type {?} */ _H = getHours$1(date, opts.isUTC);
+        var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
+        var /** @type {?} */ _ss = zeroFill$1(getSeconds$1(date, opts.isUTC), 2);
+        return "" + _H + _mm + _ss;
+    });
+    /**
+     * @param {?} token
+     * @param {?} lowercase
+     * @return {?}
+     */
+    function meridiem(token, lowercase) {
+        addFormatToken$1(token, null, null, function (date, opts) {
+            return opts.locale.meridiem(getHours$1(date, opts.isUTC), getMinutes$1(date, opts.isUTC), lowercase);
+        });
+    }
+    meridiem('a', true);
+    meridiem('A', false);
+    // ALIASES
+    addUnitAlias$1('hour', 'h');
+    /**
+     * @param {?} isStrict
+     * @param {?} locale
+     * @return {?}
+     */
+    function matchMeridiem(isStrict, locale) {
+        return locale._meridiemParse;
+    }
+    addRegexToken$1('a', matchMeridiem);
+    addRegexToken$1('A', matchMeridiem);
+    addRegexToken$1('H', match1to2$1);
+    addRegexToken$1('h', match1to2$1);
+    addRegexToken$1('k', match1to2$1);
+    addRegexToken$1('HH', match1to2$1, match2$1);
+    addRegexToken$1('hh', match1to2$1, match2$1);
+    addRegexToken$1('kk', match1to2$1, match2$1);
+    addRegexToken$1('hmm', match3to4$1);
+    addRegexToken$1('hmmss', match5to6$1);
+    addRegexToken$1('Hmm', match3to4$1);
+    addRegexToken$1('Hmmss', match5to6$1);
+    addParseToken$1(['H', 'HH'], HOUR$1);
+    addParseToken$1(['k', 'kk'], function (input, array, config) {
+        var /** @type {?} */ kInput = toInt$1(input);
+        array[HOUR$1] = kInput === 24 ? 0 : kInput;
+        return config;
+    });
+    addParseToken$1(['a', 'A'], function (input, array, config) {
+        config._isPm = config._locale.isPM(input);
+        config._meridiem = input;
+        return config;
+    });
+    addParseToken$1(['h', 'hh'], function (input, array, config) {
+        array[HOUR$1] = toInt$1(input);
+        getParsingFlags$1(config).bigHour = true;
+        return config;
+    });
+    addParseToken$1('hmm', function (input, array, config) {
+        var /** @type {?} */ pos = input.length - 2;
+        array[HOUR$1] = toInt$1(input.substr(0, pos));
+        array[MINUTE$1] = toInt$1(input.substr(pos));
+        getParsingFlags$1(config).bigHour = true;
+        return config;
+    });
+    addParseToken$1('hmmss', function (input, array, config) {
+        var /** @type {?} */ pos1 = input.length - 4;
+        var /** @type {?} */ pos2 = input.length - 2;
+        array[HOUR$1] = toInt$1(input.substr(0, pos1));
+        array[MINUTE$1] = toInt$1(input.substr(pos1, 2));
+        array[SECOND$1] = toInt$1(input.substr(pos2));
+        getParsingFlags$1(config).bigHour = true;
+        return config;
+    });
+    addParseToken$1('Hmm', function (input, array, config) {
+        var /** @type {?} */ pos = input.length - 2;
+        array[HOUR$1] = toInt$1(input.substr(0, pos));
+        array[MINUTE$1] = toInt$1(input.substr(pos));
+        return config;
+    });
+    addParseToken$1('Hmmss', function (input, array, config) {
+        var /** @type {?} */ pos1 = input.length - 4;
+        var /** @type {?} */ pos2 = input.length - 2;
+        array[HOUR$1] = toInt$1(input.substr(0, pos1));
+        array[MINUTE$1] = toInt$1(input.substr(pos1, 2));
+        array[SECOND$1] = toInt$1(input.substr(pos2));
+        return config;
+    });
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 var /** @type {?} */ locales$1 = {};
 var /** @type {?} */ localeFamilies$1 = {};
 var /** @type {?} */ globalLocale$1;
@@ -7087,6 +7779,7 @@ function defineLocale$1(name, config) {
  * @return {?}
  */
 function getLocale$1(key) {
+    setDefaultLocale$1();
     if (!key) {
         return globalLocale$1;
     }
@@ -7094,21 +7787,43 @@ function getLocale$1(key) {
     var /** @type {?} */ _key = isArray$1(key) ? key : [key];
     return chooseLocale$1(_key);
 }
-// define default locale
-getSetGlobalLocale$1('en', {
-    dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
-    ordinal: /**
-     * @param {?} num
-     * @return {?}
-     */
-    function (num) {
-        var /** @type {?} */ b = num % 10;
-        var /** @type {?} */ output = toInt$1((num % 100) / 10) === 1
-            ? 'th'
-            : b === 1 ? 'st' : b === 2 ? 'nd' : b === 3 ? 'rd' : 'th';
-        return num + output;
+/**
+ * @return {?}
+ */
+function setDefaultLocale$1() {
+    if (locales$1["en"]) {
+        return undefined;
     }
-});
+    getSetGlobalLocale$1('en', {
+        dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
+        ordinal: /**
+         * @param {?} num
+         * @return {?}
+         */
+        function (num) {
+            var /** @type {?} */ b = num % 10;
+            var /** @type {?} */ output = toInt$1((num % 100) / 10) === 1
+                ? 'th'
+                : b === 1 ? 'st' : b === 2 ? 'nd' : b === 3 ? 'rd' : 'th';
+            return num + output;
+        }
+    });
+    initWeek$1();
+    initWeekYear$1();
+    initYear$1();
+    initTimezone$1();
+    initTimestamp$1();
+    initSecond$1();
+    initQuarter$1();
+    initOffset$1();
+    initMonth$1();
+    initMinute$1();
+    initMillisecond$1();
+    initHour$1();
+    initDayOfYear$1();
+    initDayOfWeek$1();
+    initDayOfMonth$1();
+}
 
 /**
  * @fileoverview added by tsickle
@@ -8393,131 +9108,6 @@ function absRound$1(num) {
  * @suppress {checkTypes} checked by tsc
  */
 /**
- * @param {?} token
- * @param {?} separator
- * @return {?}
- */
-function addOffsetFormatToken$1(token, separator) {
-    addFormatToken$1(token, null, null, function (date, config) {
-        var /** @type {?} */ offset = getUTCOffset$1(date, { _isUTC: config.isUTC, _offset: config.offset });
-        var /** @type {?} */ sign = '+';
-        if (offset < 0) {
-            offset = -offset;
-            sign = '-';
-        }
-        return sign + zeroFill$1(~~(offset / 60), 2) + separator + zeroFill$1(~~(offset) % 60, 2);
-    });
-}
-addOffsetFormatToken$1('Z', ':');
-addOffsetFormatToken$1('ZZ', '');
-// PARSING
-addRegexToken$1('Z', matchShortOffset$1);
-addRegexToken$1('ZZ', matchShortOffset$1);
-addParseToken$1(['Z', 'ZZ'], function (input, array, config) {
-    config._useUTC = true;
-    config._tzm = offsetFromString$1(matchShortOffset$1, input);
-    return config;
-});
-// HELPERS
-// timezone chunker
-// '+10:00' > ['10',  '00']
-// '-1530'  > ['-15', '30']
-var /** @type {?} */ chunkOffset$1 = /([\+\-]|\d\d)/gi;
-/**
- * @param {?} matcher
- * @param {?} str
- * @return {?}
- */
-function offsetFromString$1(matcher, str) {
-    var /** @type {?} */ matches = (str || '').match(matcher);
-    if (matches === null) {
-        return null;
-    }
-    var /** @type {?} */ chunk = matches[matches.length - 1];
-    var /** @type {?} */ parts = chunk.match(chunkOffset$1) || ['-', '0', '0'];
-    var /** @type {?} */ minutes = parseInt(parts[1], 10) * 60 + toInt$1(parts[2]);
-    var /** @type {?} */ _min = parts[0] === '+' ? minutes : -minutes;
-    return minutes === 0 ? 0 : _min;
-}
-/**
- * @param {?} input
- * @param {?} date
- * @param {?=} config
- * @return {?}
- */
-function cloneWithOffset$1(input, date, config) {
-    if (config === void 0) { config = {}; }
-    if (!config._isUTC) {
-        return input;
-    }
-    var /** @type {?} */ res = cloneDate$1(date);
-    // todo: input._d - res._d + ((res._offset || 0) - (input._offset || 0))*60000
-    var /** @type {?} */ offsetDiff = (config._offset || 0) * 60000;
-    var /** @type {?} */ diff = input.valueOf() - res.valueOf() + offsetDiff;
-    // Use low-level api, because this fn is low-level api.
-    res.setTime(res.valueOf() + diff);
-    // todo: add timezone handling
-    // hooks.updateOffset(res, false);
-    return res;
-}
-/**
- * @param {?} date
- * @return {?}
- */
-function getDateOffset$1(date) {
-    // On Firefox.24 Date#getTimezoneOffset returns a floating point.
-    // https://github.com/moment/moment/pull/1871
-    return -Math.round(date.getTimezoneOffset() / 15) * 15;
-}
-/**
- * @param {?} date
- * @param {?=} config
- * @return {?}
- */
-function getUTCOffset$1(date, config) {
-    if (config === void 0) { config = {}; }
-    var /** @type {?} */ _offset = config._offset || 0;
-    return config._isUTC ? _offset : getDateOffset$1(date);
-}
-// DEPRECATED
-/*export function isDaylightSavingTimeShifted() {
-  if (!isUndefined(this._isDSTShifted)) {
-    return this._isDSTShifted;
-  }
-
-  const c = {};
-
-  copyConfig(c, this);
-  c = prepareConfig(c);
-
-  if (c._a) {
-    const other = c._isUTC ? createUTC(c._a) : createLocal(c._a);
-    this._isDSTShifted = this.isValid() &&
-      compareArrays(c._a, other.toArray()) > 0;
-  } else {
-    this._isDSTShifted = false;
-  }
-
-  return this._isDSTShifted;
-}*/
-// in Khronos
-/*export function isLocal() {
-  return this.isValid() ? !this._isUTC : false;
-}
-
-export function isUtcOffset() {
-  return this.isValid() ? this._isUTC : false;
-}
-
-export function isUtc() {
-  return this.isValid() ? this._isUTC && this._offset === 0 : false;
-}*/
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
  * @param {?} date1
  * @param {?} date2
  * @param {?=} units
@@ -8741,58 +9331,66 @@ function addSubtract$1(date, duration, isAdding, isUTC) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-// FORMATTING
-addFormatToken$1('d', null, 'do', function (date, opts) {
-    return getDay$1(date, opts.isUTC).toString(10);
-});
-addFormatToken$1('dd', null, null, function (date, opts) {
-    return opts.locale.weekdaysMin(date, opts.format, opts.isUTC);
-});
-addFormatToken$1('ddd', null, null, function (date, opts) {
-    return opts.locale.weekdaysShort(date, opts.format, opts.isUTC);
-});
-addFormatToken$1('dddd', null, null, function (date, opts) {
-    return opts.locale.weekdays(date, opts.format, opts.isUTC);
-});
-addFormatToken$1('e', null, null, function (date, opts) {
-    return getLocaleDayOfWeek$1(date, opts.locale, opts.isUTC).toString(10);
-    // return getDay(date, opts.isUTC).toString(10);
-});
-addFormatToken$1('E', null, null, function (date, opts) {
-    return getISODayOfWeek$1(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias$1('day', 'd');
-addUnitAlias$1('weekday', 'e');
-addUnitAlias$1('isoWeekday', 'E');
-// PARSING
-addRegexToken$1('d', match1to2$1);
-addRegexToken$1('e', match1to2$1);
-addRegexToken$1('E', match1to2$1);
-addRegexToken$1('dd', function (isStrict, locale) {
-    return locale.weekdaysMinRegex(isStrict);
-});
-addRegexToken$1('ddd', function (isStrict, locale) {
-    return locale.weekdaysShortRegex(isStrict);
-});
-addRegexToken$1('dddd', function (isStrict, locale) {
-    return locale.weekdaysRegex(isStrict);
-});
-addWeekParseToken$1(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
-    var /** @type {?} */ weekday = config._locale.weekdaysParse(input, token, config._strict);
-    // if we didn't get a weekday name, mark the date as invalid
-    if (weekday != null) {
-        week["d"] = weekday;
-    }
-    else {
-        getParsingFlags$1(config).invalidWeekday = !!input;
-    }
-    return config;
-});
-addWeekParseToken$1(['d', 'e', 'E'], function (input, week, config, token) {
-    week[token] = toInt$1(input);
-    return config;
-});
+/**
+ * @return {?}
+ */
+function initDayOfWeek$1() {
+    // FORMATTING
+    addFormatToken$1('d', null, 'do', function (date, opts) {
+        return getDay$1(date, opts.isUTC)
+            .toString(10);
+    });
+    addFormatToken$1('dd', null, null, function (date, opts) {
+        return opts.locale.weekdaysMin(date, opts.format, opts.isUTC);
+    });
+    addFormatToken$1('ddd', null, null, function (date, opts) {
+        return opts.locale.weekdaysShort(date, opts.format, opts.isUTC);
+    });
+    addFormatToken$1('dddd', null, null, function (date, opts) {
+        return opts.locale.weekdays(date, opts.format, opts.isUTC);
+    });
+    addFormatToken$1('e', null, null, function (date, opts) {
+        return getLocaleDayOfWeek$1(date, opts.locale, opts.isUTC)
+            .toString(10);
+        // return getDay(date, opts.isUTC).toString(10);
+    });
+    addFormatToken$1('E', null, null, function (date, opts) {
+        return getISODayOfWeek$1(date, opts.isUTC)
+            .toString(10);
+    });
+    // ALIASES
+    addUnitAlias$1('day', 'd');
+    addUnitAlias$1('weekday', 'e');
+    addUnitAlias$1('isoWeekday', 'E');
+    // PARSING
+    addRegexToken$1('d', match1to2$1);
+    addRegexToken$1('e', match1to2$1);
+    addRegexToken$1('E', match1to2$1);
+    addRegexToken$1('dd', function (isStrict, locale) {
+        return locale.weekdaysMinRegex(isStrict);
+    });
+    addRegexToken$1('ddd', function (isStrict, locale) {
+        return locale.weekdaysShortRegex(isStrict);
+    });
+    addRegexToken$1('dddd', function (isStrict, locale) {
+        return locale.weekdaysRegex(isStrict);
+    });
+    addWeekParseToken$1(['dd', 'ddd', 'dddd'], function (input, week, config, token) {
+        var /** @type {?} */ weekday = config._locale.weekdaysParse(input, token, config._strict);
+        // if we didn't get a weekday name, mark the date as invalid
+        if (weekday != null) {
+            week["d"] = weekday;
+        }
+        else {
+            getParsingFlags$1(config).invalidWeekday = !!input;
+        }
+        return config;
+    });
+    addWeekParseToken$1(['d', 'e', 'E'], function (input, week, config, token) {
+        week[token] = toInt$1(input);
+        return config;
+    });
+}
 /**
  * @param {?} input
  * @param {?} locale
@@ -8888,399 +9486,6 @@ function setISODayOfWeek$1(date, input, opts) {
     // as a setter, sunday should belong to the previous week.
     var /** @type {?} */ weekday = parseIsoWeekday$1(input, opts.locale);
     return setDayOfWeek$1(date, getDayOfWeek$1(date) % 7 ? weekday : weekday - 7);
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-/**
- * @param {?} date
- * @param {?} isUTC
- * @return {?}
- */
-function hFormat$1(date, isUTC) {
-    return getHours$1(date, isUTC) % 12 || 12;
-}
-/**
- * @param {?} date
- * @param {?} isUTC
- * @return {?}
- */
-function kFormat$1(date, isUTC) {
-    return getHours$1(date, isUTC) || 24;
-}
-addFormatToken$1('H', ['HH', 2, false], null, function (date, opts) {
-    return getHours$1(date, opts.isUTC).toString(10);
-});
-addFormatToken$1('h', ['hh', 2, false], null, function (date, opts) {
-    return hFormat$1(date, opts.isUTC).toString(10);
-});
-addFormatToken$1('k', ['kk', 2, false], null, function (date, opts) {
-    return kFormat$1(date, opts.isUTC).toString(10);
-});
-addFormatToken$1('hmm', null, null, function (date, opts) {
-    var /** @type {?} */ _h = hFormat$1(date, opts.isUTC);
-    var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
-    return "" + _h + _mm;
-});
-addFormatToken$1('hmmss', null, null, function (date, opts) {
-    var /** @type {?} */ _h = hFormat$1(date, opts.isUTC);
-    var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
-    var /** @type {?} */ _ss = zeroFill$1(getSeconds$1(date, opts.isUTC), 2);
-    return "" + _h + _mm + _ss;
-});
-addFormatToken$1('Hmm', null, null, function (date, opts) {
-    var /** @type {?} */ _H = getHours$1(date, opts.isUTC);
-    var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
-    return "" + _H + _mm;
-});
-addFormatToken$1('Hmmss', null, null, function (date, opts) {
-    var /** @type {?} */ _H = getHours$1(date, opts.isUTC);
-    var /** @type {?} */ _mm = zeroFill$1(getMinutes$1(date, opts.isUTC), 2);
-    var /** @type {?} */ _ss = zeroFill$1(getSeconds$1(date, opts.isUTC), 2);
-    return "" + _H + _mm + _ss;
-});
-/**
- * @param {?} token
- * @param {?} lowercase
- * @return {?}
- */
-function meridiem$1(token, lowercase) {
-    addFormatToken$1(token, null, null, function (date, opts) {
-        return opts.locale.meridiem(getHours$1(date, opts.isUTC), getMinutes$1(date, opts.isUTC), lowercase);
-    });
-}
-meridiem$1('a', true);
-meridiem$1('A', false);
-// ALIASES
-addUnitAlias$1('hour', 'h');
-/**
- * @param {?} isStrict
- * @param {?} locale
- * @return {?}
- */
-function matchMeridiem$1(isStrict, locale) {
-    return locale._meridiemParse;
-}
-addRegexToken$1('a', matchMeridiem$1);
-addRegexToken$1('A', matchMeridiem$1);
-addRegexToken$1('H', match1to2$1);
-addRegexToken$1('h', match1to2$1);
-addRegexToken$1('k', match1to2$1);
-addRegexToken$1('HH', match1to2$1, match2$1);
-addRegexToken$1('hh', match1to2$1, match2$1);
-addRegexToken$1('kk', match1to2$1, match2$1);
-addRegexToken$1('hmm', match3to4$1);
-addRegexToken$1('hmmss', match5to6$1);
-addRegexToken$1('Hmm', match3to4$1);
-addRegexToken$1('Hmmss', match5to6$1);
-addParseToken$1(['H', 'HH'], HOUR$1);
-addParseToken$1(['k', 'kk'], function (input, array, config) {
-    var /** @type {?} */ kInput = toInt$1(input);
-    array[HOUR$1] = kInput === 24 ? 0 : kInput;
-    return config;
-});
-addParseToken$1(['a', 'A'], function (input, array, config) {
-    config._isPm = config._locale.isPM(input);
-    config._meridiem = input;
-    return config;
-});
-addParseToken$1(['h', 'hh'], function (input, array, config) {
-    array[HOUR$1] = toInt$1(input);
-    getParsingFlags$1(config).bigHour = true;
-    return config;
-});
-addParseToken$1('hmm', function (input, array, config) {
-    var /** @type {?} */ pos = input.length - 2;
-    array[HOUR$1] = toInt$1(input.substr(0, pos));
-    array[MINUTE$1] = toInt$1(input.substr(pos));
-    getParsingFlags$1(config).bigHour = true;
-    return config;
-});
-addParseToken$1('hmmss', function (input, array, config) {
-    var /** @type {?} */ pos1 = input.length - 4;
-    var /** @type {?} */ pos2 = input.length - 2;
-    array[HOUR$1] = toInt$1(input.substr(0, pos1));
-    array[MINUTE$1] = toInt$1(input.substr(pos1, 2));
-    array[SECOND$1] = toInt$1(input.substr(pos2));
-    getParsingFlags$1(config).bigHour = true;
-    return config;
-});
-addParseToken$1('Hmm', function (input, array, config) {
-    var /** @type {?} */ pos = input.length - 2;
-    array[HOUR$1] = toInt$1(input.substr(0, pos));
-    array[MINUTE$1] = toInt$1(input.substr(pos));
-    return config;
-});
-addParseToken$1('Hmmss', function (input, array, config) {
-    var /** @type {?} */ pos1 = input.length - 4;
-    var /** @type {?} */ pos2 = input.length - 2;
-    array[HOUR$1] = toInt$1(input.substr(0, pos1));
-    array[MINUTE$1] = toInt$1(input.substr(pos1, 2));
-    array[SECOND$1] = toInt$1(input.substr(pos2));
-    return config;
-});
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-addFormatToken$1('S', null, null, function (date, opts) {
-    return (~~(getMilliseconds$1(date, opts.isUTC) / 100)).toString(10);
-});
-addFormatToken$1(null, ['SS', 2, false], null, function (date, opts) {
-    return (~~(getMilliseconds$1(date, opts.isUTC) / 10)).toString(10);
-});
-addFormatToken$1(null, ['SSS', 3, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC)).toString(10);
-});
-addFormatToken$1(null, ['SSSS', 4, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 10).toString(10);
-});
-addFormatToken$1(null, ['SSSSS', 5, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 100).toString(10);
-});
-addFormatToken$1(null, ['SSSSSS', 6, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 1000).toString(10);
-});
-addFormatToken$1(null, ['SSSSSSS', 7, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 10000).toString(10);
-});
-addFormatToken$1(null, ['SSSSSSSS', 8, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 100000).toString(10);
-});
-addFormatToken$1(null, ['SSSSSSSSS', 9, false], null, function (date, opts) {
-    return (getMilliseconds$1(date, opts.isUTC) * 1000000).toString(10);
-});
-// ALIASES
-addUnitAlias$1('millisecond', 'ms');
-// PARSING
-addRegexToken$1('S', match1to3$1, match1$1);
-addRegexToken$1('SS', match1to3$1, match2$1);
-addRegexToken$1('SSS', match1to3$1, match3$1);
-var /** @type {?} */ token$1;
-for (token$1 = 'SSSS'; token$1.length <= 9; token$1 += 'S') {
-    addRegexToken$1(token$1, matchUnsigned$1);
-}
-/**
- * @param {?} input
- * @param {?} array
- * @param {?} config
- * @return {?}
- */
-function parseMs$1(input, array, config) {
-    array[MILLISECOND$1] = toInt$1(parseFloat("0." + input) * 1000);
-    return config;
-}
-for (token$1 = 'S'; token$1.length <= 9; token$1 += 'S') {
-    addParseToken$1(token$1, parseMs$1);
-}
-// MOMENTS
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1('m', ['mm', 2, false], null, function (date, opts) {
-    return getMinutes$1(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias$1('minute', 'm');
-// PARSING
-addRegexToken$1('m', match1to2$1);
-addRegexToken$1('mm', match1to2$1, match2$1);
-addParseToken$1(['m', 'mm'], MINUTE$1);
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1('Q', null, 'Qo', function (date, opts) {
-    return getQuarter$1(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias$1('quarter', 'Q');
-// PARSING
-addRegexToken$1('Q', match1$1);
-addParseToken$1('Q', function (input, array, config) {
-    array[MONTH$1] = (toInt$1(input) - 1) * 3;
-    return config;
-});
-/**
- * @param {?} date
- * @param {?=} isUTC
- * @return {?}
- */
-function getQuarter$1(date, isUTC) {
-    if (isUTC === void 0) { isUTC = false; }
-    return Math.ceil((getMonth$1(date, isUTC) + 1) / 3);
-}
-// export function getSetQuarter(input) {
-//   return input == null
-//     ? Math.ceil((this.month() + 1) / 3)
-//     : this.month((input - 1) * 3 + this.month() % 3);
-// }
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1('s', ['ss', 2, false], null, function (date, opts) {
-    return getSeconds$1(date, opts.isUTC).toString(10);
-});
-// ALIASES
-addUnitAlias$1('second', 's');
-// PARSING
-addRegexToken$1('s', match1to2$1);
-addRegexToken$1('ss', match1to2$1, match2$1);
-addParseToken$1(['s', 'ss'], SECOND$1);
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1('X', null, null, function (date) {
-    return unix$1(date).toString(10);
-});
-addFormatToken$1('x', null, null, function (date) {
-    return date.valueOf().toString(10);
-});
-// PARSING
-addRegexToken$1('x', matchSigned$1);
-addRegexToken$1('X', matchTimestamp$1);
-addParseToken$1('X', function (input, array, config) {
-    config._d = new Date(parseFloat(input) * 1000);
-    return config;
-});
-addParseToken$1('x', function (input, array, config) {
-    config._d = new Date(toInt$1(input));
-    return config;
-});
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1('w', ['ww', 2, false], 'wo', function (date, opts) {
-    return getWeek$1(date, opts.locale).toString(10);
-});
-addFormatToken$1('W', ['WW', 2, false], 'Wo', function (date) {
-    return getISOWeek$1(date).toString(10);
-});
-// ALIASES
-addUnitAlias$1('week', 'w');
-addUnitAlias$1('isoWeek', 'W');
-// PARSING
-addRegexToken$1('w', match1to2$1);
-addRegexToken$1('ww', match1to2$1, match2$1);
-addRegexToken$1('W', match1to2$1);
-addRegexToken$1('WW', match1to2$1, match2$1);
-addWeekParseToken$1(['w', 'ww', 'W', 'WW'], function (input, week, config, token) {
-    week[token.substr(0, 1)] = toInt$1(input);
-    return config;
-});
-/**
- * @param {?} date
- * @param {?=} locale
- * @param {?=} isUTC
- * @return {?}
- */
-function getWeek$1(date, locale, isUTC) {
-    if (locale === void 0) { locale = getLocale$1(); }
-    return locale.week(date, isUTC);
-}
-/**
- * @param {?} date
- * @param {?=} isUTC
- * @return {?}
- */
-function getISOWeek$1(date, isUTC) {
-    return weekOfYear$1(date, 1, 4, isUTC).week;
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-// FORMATTING
-addFormatToken$1(null, ['gg', 2, false], null, function (date, opts) {
-    // return this.weekYear() % 100;
-    return (getWeekYear$1(date, opts.locale) % 100).toString();
-});
-addFormatToken$1(null, ['GG', 2, false], null, function (date) {
-    // return this.isoWeekYear() % 100;
-    return (getISOWeekYear$1(date) % 100).toString();
-});
-/**
- * @param {?} token
- * @param {?} getter
- * @return {?}
- */
-function addWeekYearFormatToken$1(token, getter) {
-    addFormatToken$1(null, [token, token.length, false], null, getter);
-}
-/**
- * @param {?} date
- * @param {?} opts
- * @return {?}
- */
-function _getWeekYearFormatCb$1(date, opts) {
-    return getWeekYear$1(date, opts.locale).toString();
-}
-/**
- * @param {?} date
- * @return {?}
- */
-function _getISOWeekYearFormatCb$1(date) {
-    return getISOWeekYear$1(date).toString();
-}
-addWeekYearFormatToken$1('gggg', _getWeekYearFormatCb$1);
-addWeekYearFormatToken$1('ggggg', _getWeekYearFormatCb$1);
-addWeekYearFormatToken$1('GGGG', _getISOWeekYearFormatCb$1);
-addWeekYearFormatToken$1('GGGGG', _getISOWeekYearFormatCb$1);
-// ALIASES
-addUnitAlias$1('weekYear', 'gg');
-addUnitAlias$1('isoWeekYear', 'GG');
-// PARSING
-addRegexToken$1('G', matchSigned$1);
-addRegexToken$1('g', matchSigned$1);
-addRegexToken$1('GG', match1to2$1, match2$1);
-addRegexToken$1('gg', match1to2$1, match2$1);
-addRegexToken$1('GGGG', match1to4$1, match4$1);
-addRegexToken$1('gggg', match1to4$1, match4$1);
-addRegexToken$1('GGGGG', match1to6$1, match6$1);
-addRegexToken$1('ggggg', match1to6$1, match6$1);
-addWeekParseToken$1(['gggg', 'ggggg', 'GGGG', 'GGGGG'], function (input, week, config, token) {
-    week[token.substr(0, 2)] = toInt$1(input);
-    return config;
-});
-addWeekParseToken$1(['gg', 'GG'], function (input, week, config, token) {
-    week[token] = parseTwoDigitYear$1(input);
-    return config;
-});
-/**
- * @param {?} date
- * @param {?=} locale
- * @param {?=} isUTC
- * @return {?}
- */
-function getWeekYear$1(date, locale, isUTC) {
-    if (locale === void 0) { locale = getLocale$1(); }
-    return weekOfYear$1(date, locale.firstDayOfWeek(), locale.firstDayOfYear(), isUTC).year;
-}
-/**
- * @param {?} date
- * @param {?=} isUTC
- * @return {?}
- */
-function getISOWeekYear$1(date, isUTC) {
-    return weekOfYear$1(date, 1, 4, isUTC).year;
 }
 
 /**
@@ -23539,6 +23744,101 @@ const arLocale$1 = {
 };
 
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
+// tslint:disable:no-bitwise prefer-template cyclomatic-complexity
+// tslint:disable:no-shadowed-variable switch-default prefer-const
+// tslint:disable:one-variable-per-declaration newline-before-return
+//! moment.js locale configuration
+//! locale : Bulgarian [bg]
+//! author : Iskren Ivov Chernev : https://github.com/ichernev
+//! author : Kunal Marwaha : https://github.com/marwahaha
+//! author : Matt Grande : https://github.com/mattgrande
+//! author : Isaac Cambron : https://github.com/icambron
+//! author : Venelin Manchev : https://github.com/vmanchev
+const bgLocale$1 = {
+    abbr: 'bg',
+    months: 'януари_февруари_март_април_май_юни_юли_август_септември_октомври_ноември_декември'.split('_'),
+    monthsShort: 'янр_фев_мар_апр_май_юни_юли_авг_сеп_окт_ное_дек'.split('_'),
+    weekdays: 'неделя_понеделник_вторник_сряда_четвъртък_петък_събота'.split('_'),
+    weekdaysShort: 'нед_пон_вто_сря_чет_пет_съб'.split('_'),
+    weekdaysMin: 'нд_пн_вт_ср_чт_пт_сб'.split('_'),
+    longDateFormat: {
+        LT: 'H:mm',
+        LTS: 'H:mm:ss',
+        L: 'D.MM.YYYY',
+        LL: 'D MMMM YYYY',
+        LLL: 'D MMMM YYYY H:mm',
+        LLLL: 'dddd, D MMMM YYYY H:mm'
+    },
+    calendar: {
+        sameDay: '[Днес в] LT',
+        nextDay: '[Утре в] LT',
+        nextWeek: 'dddd [в] LT',
+        lastDay: '[Вчера в] LT',
+        lastWeek: function (d) {
+            switch (d) {
+                case 0:
+                case 3:
+                case 6:
+                    return '[В изминалата] dddd [в] LT';
+                case 1:
+                case 2:
+                case 4:
+                case 5:
+                    return '[В изминалия] dddd [в] LT';
+            }
+        },
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: 'след %s',
+        past: 'преди %s',
+        s: 'няколко секунди',
+        ss: '%d секунди',
+        m: 'минута',
+        mm: '%d минути',
+        h: 'час',
+        hh: '%d часа',
+        d: 'ден',
+        dd: '%d дни',
+        M: 'месец',
+        MM: '%d месеца',
+        y: 'година',
+        yy: '%d години'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
+    ordinal: function (_num) {
+        const number = Number(_num);
+        let lastDigit = number % 10, last2Digits = number % 100;
+        if (number === 0) {
+            return number + '-ев';
+        }
+        else if (last2Digits === 0) {
+            return number + '-ен';
+        }
+        else if (last2Digits > 10 && last2Digits < 20) {
+            return number + '-ти';
+        }
+        else if (lastDigit === 1) {
+            return number + '-ви';
+        }
+        else if (lastDigit === 2) {
+            return number + '-ри';
+        }
+        else if (lastDigit === 7 || lastDigit === 8) {
+            return number + '-ми';
+        }
+        else {
+            return number + '-ти';
+        }
+    },
+    week: {
+        dow: 1,
+        // Monday is the first day of the week.
+        doy: 7 // The week that contains Jan 1st is the first week of the year.
+    }
+};
+
+// tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
 //! locale : Czech [cs]
 //! author : petrbela : https://github.com/petrbela
@@ -23547,7 +23847,7 @@ const monthsShort$6 = 'led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro'
 function plural$4(num) {
     return (num > 1) && (num < 5) && (~~(num / 10) !== 1);
 }
-function translate$6(num, withoutSuffix, key, isFuture) {
+function translate$7(num, withoutSuffix, key, isFuture) {
     const result = num + ' ';
     switch (key) {
         case 's':
@@ -23703,18 +24003,18 @@ const csLocale$1 = {
     relativeTime: {
         future: 'za %s',
         past: 'před %s',
-        s: translate$6,
-        ss: translate$6,
-        m: translate$6,
-        mm: translate$6,
-        h: translate$6,
-        hh: translate$6,
-        d: translate$6,
-        dd: translate$6,
-        M: translate$6,
-        MM: translate$6,
-        y: translate$6,
-        yy: translate$6
+        s: translate$7,
+        ss: translate$7,
+        m: translate$7,
+        mm: translate$7,
+        h: translate$7,
+        hh: translate$7,
+        d: translate$7,
+        dd: translate$7,
+        M: translate$7,
+        MM: translate$7,
+        y: translate$7,
+        yy: translate$7
     },
     dayOfMonthOrdinalParse: /\d{1,2}\./,
     ordinal: '%d.',
@@ -23913,22 +24213,23 @@ const enGbLocale$1 = {
 
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
-//! locale : Spanish [es]
-//! author : Julio Napurí : https://github.com/julionc
+//! locale : Spanish (Dominican Republic) [es-do]
 let monthsShortDot$4 = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'), monthsShort$7 = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 let monthsParse$6 = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
 let monthsRegex$5 = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
-const esLocale$1 = {
-    abbr: 'es',
+const esDoLocale$1 = {
+    abbr: 'es-do',
     months: 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort(date, format, isUTC) {
         if (!date) {
             return monthsShortDot$4;
         }
-        if (/-MMM-/.test(format)) {
+        else if (/-MMM-/.test(format)) {
             return monthsShort$7[getMonth(date, isUTC)];
         }
-        return monthsShortDot$4[getMonth(date, isUTC)];
+        else {
+            return monthsShortDot$4[getMonth(date, isUTC)];
+        }
     },
     monthsRegex: monthsRegex$5,
     monthsShortRegex: monthsRegex$5,
@@ -23942,12 +24243,12 @@ const esLocale$1 = {
     weekdaysMin: 'do_lu_ma_mi_ju_vi_sá'.split('_'),
     weekdaysParseExact: true,
     longDateFormat: {
-        LT: 'H:mm',
-        LTS: 'H:mm:ss',
+        LT: 'h:mm A',
+        LTS: 'h:mm:ss A',
         L: 'DD/MM/YYYY',
         LL: 'D [de] MMMM [de] YYYY',
-        LLL: 'D [de] MMMM [de] YYYY H:mm',
-        LLLL: 'dddd, D [de] MMMM [de] YYYY H:mm'
+        LLL: 'D [de] MMMM [de] YYYY h:mm A',
+        LLLL: 'dddd, D [de] MMMM [de] YYYY h:mm A'
     },
     calendar: {
         sameDay(date) {
@@ -23994,23 +24295,22 @@ const esLocale$1 = {
 
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
-//! locale : Spanish (Dominican Republic) [es-do]
+//! locale : Spanish [es]
+//! author : Julio Napurí : https://github.com/julionc
 let monthsShortDot$5 = 'ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.'.split('_'), monthsShort$8 = 'ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic'.split('_');
 let monthsParse$7 = [/^ene/i, /^feb/i, /^mar/i, /^abr/i, /^may/i, /^jun/i, /^jul/i, /^ago/i, /^sep/i, /^oct/i, /^nov/i, /^dic/i];
 let monthsRegex$6 = /^(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|ene\.?|feb\.?|mar\.?|abr\.?|may\.?|jun\.?|jul\.?|ago\.?|sep\.?|oct\.?|nov\.?|dic\.?)/i;
-const esDoLocale$1 = {
-    abbr: 'es-do',
+const esLocale$1 = {
+    abbr: 'es',
     months: 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
     monthsShort(date, format, isUTC) {
         if (!date) {
             return monthsShortDot$5;
         }
-        else if (/-MMM-/.test(format)) {
+        if (/-MMM-/.test(format)) {
             return monthsShort$8[getMonth(date, isUTC)];
         }
-        else {
-            return monthsShortDot$5[getMonth(date, isUTC)];
-        }
+        return monthsShortDot$5[getMonth(date, isUTC)];
     },
     monthsRegex: monthsRegex$6,
     monthsShortRegex: monthsRegex$6,
@@ -24024,12 +24324,12 @@ const esDoLocale$1 = {
     weekdaysMin: 'do_lu_ma_mi_ju_vi_sá'.split('_'),
     weekdaysParseExact: true,
     longDateFormat: {
-        LT: 'h:mm A',
-        LTS: 'h:mm:ss A',
+        LT: 'H:mm',
+        LTS: 'H:mm:ss',
         L: 'DD/MM/YYYY',
         LL: 'D [de] MMMM [de] YYYY',
-        LLL: 'D [de] MMMM [de] YYYY h:mm A',
-        LLLL: 'dddd, D [de] MMMM [de] YYYY h:mm A'
+        LLL: 'D [de] MMMM [de] YYYY H:mm',
+        LLLL: 'dddd, D [de] MMMM [de] YYYY H:mm'
     },
     calendar: {
         sameDay(date) {
@@ -24160,7 +24460,7 @@ var numbersPast$1 = 'nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdek
     'nolla', 'yhden', 'kahden', 'kolmen', 'neljän', 'viiden', 'kuuden',
     numbersPast$1[7], numbersPast$1[8], numbersPast$1[9]
 ];
-function translate$7(num, withoutSuffix, key, isFuture) {
+function translate$8(num, withoutSuffix, key, isFuture) {
     var result = '';
     switch (key) {
         case 's':
@@ -24229,18 +24529,18 @@ const fiLocale$1 = {
     relativeTime: {
         future: '%s päästä',
         past: '%s sitten',
-        s: translate$7,
-        ss: translate$7,
-        m: translate$7,
-        mm: translate$7,
-        h: translate$7,
-        hh: translate$7,
-        d: translate$7,
-        dd: translate$7,
-        M: translate$7,
-        MM: translate$7,
-        y: translate$7,
-        yy: translate$7
+        s: translate$8,
+        ss: translate$8,
+        m: translate$8,
+        mm: translate$8,
+        h: translate$8,
+        hh: translate$8,
+        d: translate$8,
+        dd: translate$8,
+        M: translate$8,
+        MM: translate$8,
+        y: translate$8,
+        yy: translate$8
     },
     dayOfMonthOrdinalParse: /\d{1,2}\./,
     ordinal: '%d.',
@@ -24637,7 +24937,7 @@ const hiLocale$1 = {
 //! locale : Hungarian [hu]
 //! author : Adam Brunner : https://github.com/adambrunner
 let weekEndings$1 = 'vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton'.split(' ');
-function translate$8(num, withoutSuffix, key, isFuture) {
+function translate$9(num, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':
             return (isFuture || withoutSuffix) ? 'néhány másodperc' : 'néhány másodperce';
@@ -24711,18 +25011,18 @@ const huLocale$1 = {
     relativeTime: {
         future: '%s múlva',
         past: '%s',
-        s: translate$8,
-        ss: translate$8,
-        m: translate$8,
-        mm: translate$8,
-        h: translate$8,
-        hh: translate$8,
-        d: translate$8,
-        dd: translate$8,
-        M: translate$8,
-        MM: translate$8,
-        y: translate$8,
-        yy: translate$8
+        s: translate$9,
+        ss: translate$9,
+        m: translate$9,
+        mm: translate$9,
+        h: translate$9,
+        hh: translate$9,
+        d: translate$9,
+        dd: translate$9,
+        M: translate$9,
+        MM: translate$9,
+        y: translate$9,
+        yy: translate$9
     },
     dayOfMonthOrdinalParse: /\d{1,2}\./,
     ordinal: '%d.',
@@ -25035,11 +25335,128 @@ const koLocale$1 = {
 // tslint:disable:no-bitwise prefer-template cyclomatic-complexity
 // tslint:disable:no-shadowed-variable switch-default prefer-const
 // tslint:disable:one-variable-per-declaration newline-before-return
+//! moment.js locale configuration
+//! locale : Lithuanian [lt]
+//! author : Stanislavas Guk : https://github.com/ixoster
+const units$1 = {
+    ss: 'sekundė_sekundžių_sekundes',
+    m: 'minutė_minutės_minutę',
+    mm: 'minutės_minučių_minutes',
+    h: 'valanda_valandos_valandą',
+    hh: 'valandos_valandų_valandas',
+    d: 'diena_dienos_dieną',
+    dd: 'dienos_dienų_dienas',
+    M: 'mėnuo_mėnesio_mėnesį',
+    MM: 'mėnesiai_mėnesių_mėnesius',
+    y: 'metai_metų_metus',
+    yy: 'metai_metų_metus'
+};
+function translateSeconds$1(num, withoutSuffix, key, isFuture) {
+    if (withoutSuffix) {
+        return 'kelios sekundės';
+    }
+    else {
+        return isFuture ? 'kelių sekundžių' : 'kelias sekundes';
+    }
+}
+function translateSingular$1(num, withoutSuffix, key, isFuture) {
+    return withoutSuffix ? forms$1(key)[0] : (isFuture ? forms$1(key)[1] : forms$1(key)[2]);
+}
+function special$1(num) {
+    return num % 10 === 0 || (num > 10 && num < 20);
+}
+function forms$1(key) {
+    return units$1[key].split('_');
+}
+function translate$10(num, withoutSuffix, key, isFuture) {
+    let result = num + ' ';
+    if (num === 1) {
+        return result + translateSingular$1(num, withoutSuffix, key[0], isFuture);
+    }
+    else if (withoutSuffix) {
+        return result + (special$1(num) ? forms$1(key)[1] : forms$1(key)[0]);
+    }
+    else {
+        if (isFuture) {
+            return result + forms$1(key)[1];
+        }
+        else {
+            return result + (special$1(num) ? forms$1(key)[1] : forms$1(key)[2]);
+        }
+    }
+}
+const ltLocale$1 = {
+    abbr: 'lt',
+    months: {
+        format: 'sausio_vasario_kovo_balandžio_gegužės_birželio_liepos_rugpjūčio_rugsėjo_spalio_lapkričio_gruodžio'.split('_'),
+        standalone: 'sausis_vasaris_kovas_balandis_gegužė_birželis_liepa_rugpjūtis_rugsėjis_spalis_lapkritis_gruodis'.split('_'),
+        isFormat: /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?|MMMM?(\[[^\[\]]*\]|\s)+D[oD]?/
+    },
+    monthsShort: 'sau_vas_kov_bal_geg_bir_lie_rgp_rgs_spa_lap_grd'.split('_'),
+    weekdays: {
+        format: 'sekmadienį_pirmadienį_antradienį_trečiadienį_ketvirtadienį_penktadienį_šeštadienį'.split('_'),
+        standalone: 'sekmadienis_pirmadienis_antradienis_trečiadienis_ketvirtadienis_penktadienis_šeštadienis'.split('_'),
+        isFormat: /dddd HH:mm/
+    },
+    weekdaysShort: 'Sek_Pir_Ant_Tre_Ket_Pen_Šeš'.split('_'),
+    weekdaysMin: 'S_P_A_T_K_Pn_Š'.split('_'),
+    weekdaysParseExact: true,
+    longDateFormat: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'YYYY-MM-DD',
+        LL: 'YYYY [m.] MMMM D [d.]',
+        LLL: 'YYYY [m.] MMMM D [d.], HH:mm [val.]',
+        LLLL: 'YYYY [m.] MMMM D [d.], dddd, HH:mm [val.]',
+        l: 'YYYY-MM-DD',
+        ll: 'YYYY [m.] MMMM D [d.]',
+        lll: 'YYYY [m.] MMMM D [d.], HH:mm [val.]',
+        llll: 'YYYY [m.] MMMM D [d.], ddd, HH:mm [val.]'
+    },
+    calendar: {
+        sameDay: '[Šiandien] LT',
+        nextDay: '[Rytoj] LT',
+        nextWeek: 'dddd LT',
+        lastDay: '[Vakar] LT',
+        lastWeek: '[Praėjusį] dddd LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: 'po %s',
+        past: 'prieš %s',
+        s: translateSeconds$1,
+        ss: translate$10,
+        m: translateSingular$1,
+        mm: translate$10,
+        h: translateSingular$1,
+        hh: translate$10,
+        d: translateSingular$1,
+        dd: translate$10,
+        M: translateSingular$1,
+        MM: translate$10,
+        y: translateSingular$1,
+        yy: translate$10
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}-oji/,
+    ordinal(num) {
+        return num + '-oji';
+    },
+    week: {
+        dow: 1,
+        // Monday is the first day of the week.
+        doy: 4 // The week that contains Jan 4th is the first week of the year.
+    }
+};
+
+// tslint:disable:comment-format binary-expression-operand-order max-line-length
+// tslint:disable:no-bitwise prefer-template cyclomatic-complexity
+// tslint:disable:no-shadowed-variable switch-default prefer-const
+// tslint:disable:one-variable-per-declaration newline-before-return
 // tslint:disable:object-literal-shorthand
 //! moment.js locale configuration
 //! locale : Mongolian [mn]
 //! author : Javkhlantugs Nyamdorj : https://github.com/javkhaanj7
-function translate$9(num, withoutSuffix, key, isFuture) {
+function translate$11(num, withoutSuffix, key, isFuture) {
     switch (key) {
         case 's':
             return withoutSuffix ? 'хэдхэн секунд' : 'хэдхэн секундын';
@@ -25104,18 +25521,18 @@ const mnLocale$1 = {
     relativeTime: {
         future: '%s дараа',
         past: '%s өмнө',
-        s: translate$9,
-        ss: translate$9,
-        m: translate$9,
-        mm: translate$9,
-        h: translate$9,
-        hh: translate$9,
-        d: translate$9,
-        dd: translate$9,
-        M: translate$9,
-        MM: translate$9,
-        y: translate$9,
-        yy: translate$9
+        s: translate$11,
+        ss: translate$11,
+        m: translate$11,
+        mm: translate$11,
+        h: translate$11,
+        hh: translate$11,
+        d: translate$11,
+        dd: translate$11,
+        M: translate$11,
+        MM: translate$11,
+        y: translate$11,
+        yy: translate$11
     },
     dayOfMonthOrdinalParse: /\d{1,2} өдөр/,
     ordinal: function (num, period) {
@@ -25130,16 +25547,71 @@ const mnLocale$1 = {
     }
 };
 
+//! moment.js locale configuration
+//! locale : Norwegian Bokmål [nb]
+//! authors : Espen Hovlandsdal : https://github.com/rexxars
+//!           Sigurd Gartmann : https://github.com/sigurdga
+const nbLocale$1 = {
+    abbr: 'nb',
+    months: 'januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember'.split('_'),
+    monthsShort: 'jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.'.split('_'),
+    monthsParseExact: true,
+    weekdays: 'søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag'.split('_'),
+    weekdaysShort: 'sø._ma._ti._on._to._fr._lø.'.split('_'),
+    weekdaysMin: 'sø_ma_ti_on_to_fr_lø'.split('_'),
+    weekdaysParseExact: true,
+    longDateFormat: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'DD.MM.YYYY',
+        LL: 'D. MMMM YYYY',
+        LLL: 'D. MMMM YYYY [kl.] HH:mm',
+        LLLL: 'dddd D. MMMM YYYY [kl.] HH:mm'
+    },
+    calendar: {
+        sameDay: '[i dag kl.] LT',
+        nextDay: '[i morgen kl.] LT',
+        nextWeek: 'dddd [kl.] LT',
+        lastDay: '[i går kl.] LT',
+        lastWeek: '[forrige] dddd [kl.] LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: 'om %s',
+        past: '%s siden',
+        s: 'noen sekunder',
+        ss: '%d sekunder',
+        m: 'ett minutt',
+        mm: '%d minutter',
+        h: 'en time',
+        hh: '%d timer',
+        d: 'en dag',
+        dd: '%d dager',
+        M: 'en måned',
+        MM: '%d måneder',
+        y: 'ett år',
+        yy: '%d år'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}\./,
+    ordinal: '%d.',
+    week: {
+        dow: 1,
+        // Monday is the first day of the week.
+        doy: 4 // The week that contains Jan 4th is the first week of the year.
+    }
+};
+
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
-//! locale : Dutch [nl]
+//! locale : Dutch (Belgium) [nl-be]
 //! author : Joris Röling : https://github.com/jorisroling
 //! author : Jacob Middag : https://github.com/middagj
-let monthsShortWithDots$2 = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_'), monthsShortWithoutDots$2 = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+let monthsShortWithDots$2 = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
+let monthsShortWithoutDots$2 = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
 let monthsParse$9 = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
 let monthsRegex$8 = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
-const nlLocale$1 = {
-    abbr: 'nl',
+const nlBeLocale$1 = {
+    abbr: 'nl-be',
     months: 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
     monthsShort(date, format, isUTC) {
         if (!date) {
@@ -25159,84 +25631,6 @@ const nlLocale$1 = {
     monthsParse: monthsParse$9,
     longMonthsParse: monthsParse$9,
     shortMonthsParse: monthsParse$9,
-    weekdays: 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
-    weekdaysShort: 'zo._ma._di._wo._do._vr._za.'.split('_'),
-    weekdaysMin: 'zo_ma_di_wo_do_vr_za'.split('_'),
-    weekdaysParseExact: true,
-    longDateFormat: {
-        LT: 'HH:mm',
-        LTS: 'HH:mm:ss',
-        L: 'DD-MM-YYYY',
-        LL: 'D MMMM YYYY',
-        LLL: 'D MMMM YYYY HH:mm',
-        LLLL: 'dddd D MMMM YYYY HH:mm'
-    },
-    calendar: {
-        sameDay: '[vandaag om] LT',
-        nextDay: '[morgen om] LT',
-        nextWeek: 'dddd [om] LT',
-        lastDay: '[gisteren om] LT',
-        lastWeek: '[afgelopen] dddd [om] LT',
-        sameElse: 'L'
-    },
-    relativeTime: {
-        future: 'over %s',
-        past: '%s geleden',
-        s: 'een paar seconden',
-        ss: '%d seconden',
-        m: 'één minuut',
-        mm: '%d minuten',
-        h: 'één uur',
-        hh: '%d uur',
-        d: 'één dag',
-        dd: '%d dagen',
-        M: 'één maand',
-        MM: '%d maanden',
-        y: 'één jaar',
-        yy: '%d jaar'
-    },
-    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
-    ordinal(_num) {
-        const num = Number(_num);
-        return num + ((num === 1 || num === 8 || num >= 20) ? 'ste' : 'de');
-    },
-    week: {
-        dow: 1,
-        // Monday is the first day of the week.
-        doy: 4 // The week that contains Jan 4th is the first week of the year.
-    }
-};
-
-// tslint:disable:comment-format binary-expression-operand-order max-line-length
-//! moment.js locale configuration
-//! locale : Dutch (Belgium) [nl-be]
-//! author : Joris Röling : https://github.com/jorisroling
-//! author : Jacob Middag : https://github.com/middagj
-let monthsShortWithDots$3 = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_');
-let monthsShortWithoutDots$3 = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
-let monthsParse$10 = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
-let monthsRegex$9 = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
-const nlBeLocale$1 = {
-    abbr: 'nl-be',
-    months: 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
-    monthsShort(date, format, isUTC) {
-        if (!date) {
-            return monthsShortWithDots$3;
-        }
-        else if (/-MMM-/.test(format)) {
-            return monthsShortWithoutDots$3[getMonth(date, isUTC)];
-        }
-        else {
-            return monthsShortWithDots$3[getMonth(date, isUTC)];
-        }
-    },
-    monthsRegex: monthsRegex$9,
-    monthsShortRegex: monthsRegex$9,
-    monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
-    monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
-    monthsParse: monthsParse$10,
-    longMonthsParse: monthsParse$10,
-    shortMonthsParse: monthsParse$10,
     weekdays: 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
     weekdaysShort: 'zo._ma._di._wo._do._vr._za.'.split('_'),
     weekdaysMin: 'zo_ma_di_wo_do_vr_za'.split('_'),
@@ -25287,6 +25681,83 @@ const nlBeLocale$1 = {
 
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
+//! locale : Dutch [nl]
+//! author : Joris Röling : https://github.com/jorisroling
+//! author : Jacob Middag : https://github.com/middagj
+let monthsShortWithDots$3 = 'jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.'.split('_'), monthsShortWithoutDots$3 = 'jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec'.split('_');
+let monthsParse$10 = [/^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i];
+let monthsRegex$9 = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
+const nlLocale$1 = {
+    abbr: 'nl',
+    months: 'januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december'.split('_'),
+    monthsShort(date, format, isUTC) {
+        if (!date) {
+            return monthsShortWithDots$3;
+        }
+        else if (/-MMM-/.test(format)) {
+            return monthsShortWithoutDots$3[getMonth(date, isUTC)];
+        }
+        else {
+            return monthsShortWithDots$3[getMonth(date, isUTC)];
+        }
+    },
+    monthsRegex: monthsRegex$9,
+    monthsShortRegex: monthsRegex$9,
+    monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
+    monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
+    monthsParse: monthsParse$10,
+    longMonthsParse: monthsParse$10,
+    shortMonthsParse: monthsParse$10,
+    weekdays: 'zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag'.split('_'),
+    weekdaysShort: 'zo._ma._di._wo._do._vr._za.'.split('_'),
+    weekdaysMin: 'zo_ma_di_wo_do_vr_za'.split('_'),
+    weekdaysParseExact: true,
+    longDateFormat: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'DD-MM-YYYY',
+        LL: 'D MMMM YYYY',
+        LLL: 'D MMMM YYYY HH:mm',
+        LLLL: 'dddd D MMMM YYYY HH:mm'
+    },
+    calendar: {
+        sameDay: '[vandaag om] LT',
+        nextDay: '[morgen om] LT',
+        nextWeek: 'dddd [om] LT',
+        lastDay: '[gisteren om] LT',
+        lastWeek: '[afgelopen] dddd [om] LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: 'over %s',
+        past: '%s geleden',
+        s: 'een paar seconden',
+        ss: '%d seconden',
+        m: 'één minuut',
+        mm: '%d minuten',
+        h: 'één uur',
+        hh: '%d uur',
+        d: 'één dag',
+        dd: '%d dagen',
+        M: 'één maand',
+        MM: '%d maanden',
+        y: 'één jaar',
+        yy: '%d jaar'
+    },
+    dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+    ordinal(_num) {
+        const num = Number(_num);
+        return num + ((num === 1 || num === 8 || num >= 20) ? 'ste' : 'de');
+    },
+    week: {
+        dow: 1,
+        // Monday is the first day of the week.
+        doy: 4 // The week that contains Jan 4th is the first week of the year.
+    }
+};
+
+// tslint:disable:comment-format binary-expression-operand-order max-line-length
+//! moment.js locale configuration
 //! locale : Polish [pl]
 //! author : Rafal Hirsz : https://github.com/evoL
 let monthsNominative$1 = 'styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień'.split('_');
@@ -25294,7 +25765,7 @@ let monthsSubjective$1 = 'stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sier
 function plural$5(num) {
     return (num % 10 < 5) && (num % 10 > 1) && ((~~(num / 10) % 10) !== 1);
 }
-function translate$10(num, withoutSuffix, key) {
+function translate$12(num, withoutSuffix, key) {
     let result = num + ' ';
     switch (key) {
         case 'ss':
@@ -25380,17 +25851,17 @@ const plLocale$1 = {
         future: 'za %s',
         past: '%s temu',
         s: 'kilka sekund',
-        ss: translate$10,
-        m: translate$10,
-        mm: translate$10,
-        h: translate$10,
-        hh: translate$10,
+        ss: translate$12,
+        m: translate$12,
+        mm: translate$12,
+        h: translate$12,
+        hh: translate$12,
         d: '1 dzień',
         dd: '%d dni',
         M: 'miesiąc',
-        MM: translate$10,
+        MM: translate$12,
         y: 'rok',
-        yy: translate$10
+        yy: translate$12
     },
     dayOfMonthOrdinalParse: /\d{1,2}\./,
     ordinal: '%d.',
@@ -25453,6 +25924,73 @@ const ptBrLocale$1 = {
     ordinal: '%dº'
 };
 
+// ! moment.js locale configuration
+// ! locale : Romanian [ro]
+//! author : Vlad Gurdiga : https://github.com/gurdiga
+//! author : Valentin Agachi : https://github.com/avaly
+// ! author : Earle white: https://github.com/5earle
+function relativeTimeWithPlural$2(num, withoutSuffix, key) {
+    let format = {
+        ss: 'secunde',
+        mm: 'minute',
+        hh: 'ore',
+        dd: 'zile',
+        MM: 'luni',
+        yy: 'ani'
+    };
+    let separator = ' ';
+    if (num % 100 >= 20 || (num >= 100 && num % 100 === 0)) {
+        separator = ' de ';
+    }
+    return num + separator + format[key];
+}
+const roLocale$1 = {
+    abbr: 'ro',
+    months: 'ianuarie_februarie_martie_aprilie_mai_iunie_iulie_august_septembrie_octombrie_noiembrie_decembrie'.split('_'),
+    monthsShort: 'ian._febr._mart._apr._mai_iun._iul._aug._sept._oct._nov._dec.'.split('_'),
+    monthsParseExact: true,
+    weekdays: 'duminică_luni_marți_miercuri_joi_vineri_sâmbătă'.split('_'),
+    weekdaysShort: 'Dum_Lun_Mar_Mie_Joi_Vin_Sâm'.split('_'),
+    weekdaysMin: 'Du_Lu_Ma_Mi_Jo_Vi_Sâ'.split('_'),
+    longDateFormat: {
+        LT: 'H:mm',
+        LTS: 'H:mm:ss',
+        L: 'DD.MM.YYYY',
+        LL: 'D MMMM YYYY',
+        LLL: 'D MMMM YYYY H:mm',
+        LLLL: 'dddd, D MMMM YYYY H:mm'
+    },
+    calendar: {
+        sameDay: '[azi la] LT',
+        nextDay: '[mâine la] LT',
+        nextWeek: 'dddd [la] LT',
+        lastDay: '[ieri la] LT',
+        lastWeek: '[fosta] dddd [la] LT',
+        sameElse: 'L'
+    },
+    relativeTime: {
+        future: 'peste %s',
+        past: '%s în urmă',
+        s: 'câteva secunde',
+        ss: relativeTimeWithPlural$2,
+        m: 'un minut',
+        mm: relativeTimeWithPlural$2,
+        h: 'o oră',
+        hh: relativeTimeWithPlural$2,
+        d: 'o zi',
+        dd: relativeTimeWithPlural$2,
+        M: 'o lună',
+        MM: relativeTimeWithPlural$2,
+        y: 'un an',
+        yy: relativeTimeWithPlural$2
+    },
+    week: {
+        dow: 1,
+        // Monday is the first day of the week.
+        doy: 7 // The week that contains Jan 1st is the first week of the year.
+    }
+};
+
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
 //! locale : Russian [ru]
@@ -25463,7 +26001,7 @@ function plural$6(word, num) {
     let forms = word.split('_');
     return num % 10 === 1 && num % 100 !== 11 ? forms[0] : (num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2]);
 }
-function relativeTimeWithPlural$2(num, withoutSuffix, key) {
+function relativeTimeWithPlural$3(num, withoutSuffix, key) {
     let format = {
         ss: withoutSuffix ? 'секунда_секунды_секунд' : 'секунду_секунды_секунд',
         mm: withoutSuffix ? 'минута_минуты_минут' : 'минуту_минуты_минут',
@@ -25576,17 +26114,17 @@ const ruLocale$1 = {
         future: 'через %s',
         past: '%s назад',
         s: 'несколько секунд',
-        ss: relativeTimeWithPlural$2,
-        m: relativeTimeWithPlural$2,
-        mm: relativeTimeWithPlural$2,
+        ss: relativeTimeWithPlural$3,
+        m: relativeTimeWithPlural$3,
+        mm: relativeTimeWithPlural$3,
         h: 'час',
-        hh: relativeTimeWithPlural$2,
+        hh: relativeTimeWithPlural$3,
         d: 'день',
-        dd: relativeTimeWithPlural$2,
+        dd: relativeTimeWithPlural$3,
         M: 'месяц',
-        MM: relativeTimeWithPlural$2,
+        MM: relativeTimeWithPlural$3,
         y: 'год',
-        yy: relativeTimeWithPlural$2
+        yy: relativeTimeWithPlural$3
     },
     meridiemParse: /ночи|утра|дня|вечера/i,
     isPM(input) {
@@ -25630,73 +26168,6 @@ const ruLocale$1 = {
     }
 };
 
-// ! moment.js locale configuration
-// ! locale : Romanian [ro]
-//! author : Vlad Gurdiga : https://github.com/gurdiga
-//! author : Valentin Agachi : https://github.com/avaly
-// ! author : Earle white: https://github.com/5earle
-function relativeTimeWithPlural$3(num, withoutSuffix, key) {
-    let format = {
-        ss: 'secunde',
-        mm: 'minute',
-        hh: 'ore',
-        dd: 'zile',
-        MM: 'luni',
-        yy: 'ani'
-    };
-    let separator = ' ';
-    if (num % 100 >= 20 || (num >= 100 && num % 100 === 0)) {
-        separator = ' de ';
-    }
-    return num + separator + format[key];
-}
-const roLocale$1 = {
-    abbr: 'ro',
-    months: 'ianuarie_februarie_martie_aprilie_mai_iunie_iulie_august_septembrie_octombrie_noiembrie_decembrie'.split('_'),
-    monthsShort: 'ian._febr._mart._apr._mai_iun._iul._aug._sept._oct._nov._dec.'.split('_'),
-    monthsParseExact: true,
-    weekdays: 'duminică_luni_marți_miercuri_joi_vineri_sâmbătă'.split('_'),
-    weekdaysShort: 'Dum_Lun_Mar_Mie_Joi_Vin_Sâm'.split('_'),
-    weekdaysMin: 'Du_Lu_Ma_Mi_Jo_Vi_Sâ'.split('_'),
-    longDateFormat: {
-        LT: 'H:mm',
-        LTS: 'H:mm:ss',
-        L: 'DD.MM.YYYY',
-        LL: 'D MMMM YYYY',
-        LLL: 'D MMMM YYYY H:mm',
-        LLLL: 'dddd, D MMMM YYYY H:mm'
-    },
-    calendar: {
-        sameDay: '[azi la] LT',
-        nextDay: '[mâine la] LT',
-        nextWeek: 'dddd [la] LT',
-        lastDay: '[ieri la] LT',
-        lastWeek: '[fosta] dddd [la] LT',
-        sameElse: 'L'
-    },
-    relativeTime: {
-        future: 'peste %s',
-        past: '%s în urmă',
-        s: 'câteva secunde',
-        ss: relativeTimeWithPlural$3,
-        m: 'un minut',
-        mm: relativeTimeWithPlural$3,
-        h: 'o oră',
-        hh: relativeTimeWithPlural$3,
-        d: 'o zi',
-        dd: relativeTimeWithPlural$3,
-        M: 'o lună',
-        MM: relativeTimeWithPlural$3,
-        y: 'un an',
-        yy: relativeTimeWithPlural$3
-    },
-    week: {
-        dow: 1,
-        // Monday is the first day of the week.
-        doy: 7 // The week that contains Jan 1st is the first week of the year.
-    }
-};
-
 // tslint:disable:comment-format binary-expression-operand-order max-line-length
 //! moment.js locale configuration
 //! locale : Slovak [sk]
@@ -25706,7 +26177,7 @@ const monthsShort$11 = 'jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec'.spli
 function plural$7(num) {
     return (num > 1) && (num < 5) && (~~(num / 10) !== 1);
 }
-function translate$11(num, withoutSuffix, key, isFuture) {
+function translate$13(num, withoutSuffix, key, isFuture) {
     const result = num + ' ';
     switch (key) {
         case 's':
@@ -25840,18 +26311,18 @@ const skLocale$1 = {
     relativeTime: {
         future: 'o %s',
         past: 'pred %s',
-        s: translate$11,
-        ss: translate$11,
-        m: translate$11,
-        mm: translate$11,
-        h: translate$11,
-        hh: translate$11,
-        d: translate$11,
-        dd: translate$11,
-        M: translate$11,
-        MM: translate$11,
-        y: translate$11,
-        yy: translate$11
+        s: translate$13,
+        ss: translate$13,
+        m: translate$13,
+        mm: translate$13,
+        h: translate$13,
+        hh: translate$13,
+        d: translate$13,
+        dd: translate$13,
+        M: translate$13,
+        MM: translate$13,
+        y: translate$13,
+        yy: translate$13
     },
     dayOfMonthOrdinalParse: /\d{1,2}\./,
     ordinal: '%d.',
@@ -26365,5 +26836,5 @@ const zhCnLocale$1 = {
     }
 };
 
-export { listLocales, setTheme, AccordionComponent, AccordionConfig, AccordionModule, AccordionPanelComponent, AlertComponent, AlertConfig, AlertModule, ButtonCheckboxDirective, ButtonRadioDirective, ButtonsModule, CarouselComponent, CarouselConfig, CarouselModule, SlideComponent, CollapseDirective$1 as CollapseDirective, CollapseModule$1 as CollapseModule, DateFormatter, DatePickerComponent, DatepickerConfig, DatepickerModule, DayPickerComponent, MonthPickerComponent, YearPickerComponent, BsDatepickerModule, BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService, BsDaterangepickerDirective, BsDatepickerDirective, ModalDirective, ModalOptions, ModalBackdropOptions, ModalBackdropComponent, ModalModule, BsModalRef, BsModalService, BsDropdownModule, BsDropdownConfig, BsDropdownState, BsDropdownContainerComponent, BsDropdownDirective, BsDropdownMenuDirective, BsDropdownToggleDirective, PagerComponent, PaginationComponent, PaginationConfig, PaginationModule, BarComponent, ProgressbarComponent, ProgressbarConfig, ProgressbarModule, RatingComponent, RatingModule, DraggableItemService, SortableComponent, SortableModule, NgTranscludeDirective, TabDirective, TabHeadingDirective, TabsetComponent, TabsetConfig, TabsModule, TimepickerComponent, TimepickerConfig, TimepickerModule, TooltipConfig, TooltipContainerComponent, TooltipDirective, TooltipModule, TypeaheadOptions, TypeaheadContainerComponent, TypeaheadDirective, TypeaheadMatch, TypeaheadModule, PopoverConfig, PopoverContainerComponent, PopoverDirective, PopoverModule, OnChange$1 as OnChange, document$1 as document, win as window, parseTriggers$1 as parseTriggers, LinkedList$1 as LinkedList, isBs3, Trigger$1 as Trigger, warnOnce$1 as warnOnce, Utils$1 as Utils, listenToTriggersV2$1 as listenToTriggersV2, registerOutsideClick$1 as registerOutsideClick, ComponentLoader$1 as ComponentLoader, ComponentLoaderFactory$1 as ComponentLoaderFactory, ContentRef$1 as ContentRef, BsComponentRef$1 as BsComponentRef, Positioning$1 as Positioning, PositioningService$1 as PositioningService, positionElements$1 as positionElements, MiniState$1 as MiniState, MiniStore$1 as MiniStore, defineLocale, getSetGlobalLocale, parseDate, formatDate, getDay, isFirstDayOfWeek, isSameYear, isSameDay, isSameMonth, getFullYear, getFirstDayOfMonth, getMonth, getLocale, updateLocale, isAfter, isBefore, isArray, isDateValid, isDate, shiftDate, setFullDate, endOf, startOf, arLocale$1 as arLocale, csLocale$1 as csLocale, daLocale$1 as daLocale, deLocale$1 as deLocale, enGbLocale$1 as enGbLocale, esLocale$1 as esLocale, esDoLocale$1 as esDoLocale, esUsLocale$1 as esUsLocale, fiLocale$1 as fiLocale, frLocale$1 as frLocale, glLocale$1 as glLocale, heLocale$1 as heLocale, hiLocale$1 as hiLocale, huLocale$1 as huLocale, idLocale$1 as idLocale, itLocale$1 as itLocale, jaLocale$1 as jaLocale, koLocale$1 as koLocale, mnLocale$1 as mnLocale, nlLocale$1 as nlLocale, nlBeLocale$1 as nlBeLocale, plLocale$1 as plLocale, ptBrLocale$1 as ptBrLocale, ruLocale$1 as ruLocale, roLocale$1 as roLocale, skLocale$1 as skLocale, slLocale$1 as slLocale, svLocale$1 as svLocale, thLocale$1 as thLocale, trLocale$1 as trLocale, zhCnLocale$1 as zhCnLocale };
+export { listLocales, setTheme, AccordionComponent, AccordionConfig, AccordionModule, AccordionPanelComponent, AlertComponent, AlertConfig, AlertModule, ButtonCheckboxDirective, ButtonRadioDirective, ButtonsModule, CarouselComponent, CarouselConfig, CarouselModule, SlideComponent, CollapseDirective$1 as CollapseDirective, CollapseModule$1 as CollapseModule, DateFormatter, DatePickerComponent, DatepickerConfig, DatepickerModule, DayPickerComponent, MonthPickerComponent, YearPickerComponent, BsDatepickerModule, BsDatepickerConfig, BsDaterangepickerConfig, BsLocaleService, BsDaterangepickerDirective, BsDatepickerDirective, ModalDirective, ModalOptions, ModalBackdropOptions, ModalBackdropComponent, ModalModule, BsModalRef, BsModalService, BsDropdownModule, BsDropdownConfig, BsDropdownState, BsDropdownContainerComponent, BsDropdownDirective, BsDropdownMenuDirective, BsDropdownToggleDirective, PagerComponent, PaginationComponent, PaginationConfig, PaginationModule, BarComponent, ProgressbarComponent, ProgressbarConfig, ProgressbarModule, RatingComponent, RatingModule, DraggableItemService, SortableComponent, SortableModule, NgTranscludeDirective, TabDirective, TabHeadingDirective, TabsetComponent, TabsetConfig, TabsModule, TimepickerComponent, TimepickerConfig, TimepickerModule, TooltipConfig, TooltipContainerComponent, TooltipDirective, TooltipModule, TypeaheadOptions, TypeaheadContainerComponent, TypeaheadDirective, TypeaheadMatch, TypeaheadModule, PopoverConfig, PopoverContainerComponent, PopoverDirective, PopoverModule, OnChange$1 as OnChange, document$1 as document, win as window, parseTriggers$1 as parseTriggers, LinkedList$1 as LinkedList, isBs3, Trigger$1 as Trigger, warnOnce$1 as warnOnce, Utils$1 as Utils, listenToTriggersV2$1 as listenToTriggersV2, registerOutsideClick$1 as registerOutsideClick, ComponentLoader$1 as ComponentLoader, ComponentLoaderFactory$1 as ComponentLoaderFactory, ContentRef$1 as ContentRef, BsComponentRef$1 as BsComponentRef, Positioning$1 as Positioning, PositioningService$1 as PositioningService, positionElements$1 as positionElements, MiniState$1 as MiniState, MiniStore$1 as MiniStore, defineLocale, getSetGlobalLocale, parseDate, formatDate, getDay, isFirstDayOfWeek, isSameYear, isSameDay, isSameMonth, getFullYear, getFirstDayOfMonth, getMonth, getLocale, updateLocale, isAfter, isBefore, isArray, isDateValid, isDate, shiftDate, setFullDate, endOf, startOf, arLocale$1 as arLocale, bgLocale$1 as bgLocale, csLocale$1 as csLocale, daLocale$1 as daLocale, deLocale$1 as deLocale, enGbLocale$1 as enGbLocale, esLocale$1 as esLocale, esDoLocale$1 as esDoLocale, esUsLocale$1 as esUsLocale, fiLocale$1 as fiLocale, frLocale$1 as frLocale, glLocale$1 as glLocale, heLocale$1 as heLocale, hiLocale$1 as hiLocale, huLocale$1 as huLocale, idLocale$1 as idLocale, itLocale$1 as itLocale, jaLocale$1 as jaLocale, koLocale$1 as koLocale, ltLocale$1 as ltLocale, mnLocale$1 as mnLocale, nbLocale$1 as nbLocale, nlLocale$1 as nlLocale, nlBeLocale$1 as nlBeLocale, plLocale$1 as plLocale, ptBrLocale$1 as ptBrLocale, ruLocale$1 as ruLocale, roLocale$1 as roLocale, skLocale$1 as skLocale, slLocale$1 as slLocale, svLocale$1 as svLocale, thLocale$1 as thLocale, trLocale$1 as trLocale, zhCnLocale$1 as zhCnLocale };
 //# sourceMappingURL=ngx-bootstrap.es2015.js.map

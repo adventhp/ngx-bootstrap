@@ -138,12 +138,13 @@
 	exports.MiniState = miniNgrx.MiniState;
 	exports.MiniStore = miniNgrx.MiniStore;
 	exports.arLocale = locale.arLocale;
+	exports.bgLocale = locale.bgLocale;
 	exports.csLocale = locale.csLocale;
 	exports.daLocale = locale.daLocale;
 	exports.deLocale = locale.deLocale;
 	exports.enGbLocale = locale.enGbLocale;
-	exports.esLocale = locale.esLocale;
 	exports.esDoLocale = locale.esDoLocale;
+	exports.esLocale = locale.esLocale;
 	exports.esUsLocale = locale.esUsLocale;
 	exports.fiLocale = locale.fiLocale;
 	exports.frLocale = locale.frLocale;
@@ -155,13 +156,15 @@
 	exports.itLocale = locale.itLocale;
 	exports.jaLocale = locale.jaLocale;
 	exports.koLocale = locale.koLocale;
+	exports.ltLocale = locale.ltLocale;
 	exports.mnLocale = locale.mnLocale;
-	exports.nlLocale = locale.nlLocale;
+	exports.nbLocale = locale.nbLocale;
 	exports.nlBeLocale = locale.nlBeLocale;
+	exports.nlLocale = locale.nlLocale;
 	exports.plLocale = locale.plLocale;
 	exports.ptBrLocale = locale.ptBrLocale;
-	exports.ruLocale = locale.ruLocale;
 	exports.roLocale = locale.roLocale;
+	exports.ruLocale = locale.ruLocale;
 	exports.skLocale = locale.skLocale;
 	exports.slLocale = locale.slLocale;
 	exports.svLocale = locale.svLocale;
@@ -173,4 +176,4 @@
 
 })));
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmd4LWJvb3RzdHJhcC51bWQuanMubWFwIiwic291cmNlcyI6W10sInNvdXJjZXNDb250ZW50IjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7In0=
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmd4LWJvb3RzdHJhcC51bWQuanMubWFwIiwic291cmNlcyI6W10sInNvdXJjZXNDb250ZW50IjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7In0=

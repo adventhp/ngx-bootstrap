@@ -1,8 +1,8 @@
 {
-  "main": "bundles/ngx-bootstrap.umd.js",
-  "version": "3.1.1",
+  "main": "dist/bundles/ngx-bootstrap.umd.js",
+  "version": "3.1.2",
   "description": "Native Angular Bootstrap Components",
-  "module": "esm5/ngx-bootstrap.js",
+  "module": "dist/esm5/ngx-bootstrap.js",
   "typings": "ngx-bootstrap.d.ts",
   "keywords": [
     "angular",
@@ -27,6 +27,6 @@
     "@angular/common": ">=6.0.0",
     "@angular/core": ">=6.0.0"
   },
-  "_id": "ngx-bootstrap@3.1.1",
+  "_id": "ngx-bootstrap@3.1.2",
   "schematics": "./schematics/collection.json"
 }

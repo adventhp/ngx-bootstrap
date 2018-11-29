@@ -15,12 +15,13 @@
 	 */
 
 	exports.arLocale = chronos.arLocale;
+	exports.bgLocale = chronos.bgLocale;
 	exports.csLocale = chronos.csLocale;
 	exports.daLocale = chronos.daLocale;
 	exports.deLocale = chronos.deLocale;
 	exports.enGbLocale = chronos.enGbLocale;
-	exports.esLocale = chronos.esLocale;
 	exports.esDoLocale = chronos.esDoLocale;
+	exports.esLocale = chronos.esLocale;
 	exports.esUsLocale = chronos.esUsLocale;
 	exports.fiLocale = chronos.fiLocale;
 	exports.frLocale = chronos.frLocale;
@@ -32,13 +33,15 @@
 	exports.itLocale = chronos.itLocale;
 	exports.jaLocale = chronos.jaLocale;
 	exports.koLocale = chronos.koLocale;
+	exports.ltLocale = chronos.ltLocale;
 	exports.mnLocale = chronos.mnLocale;
-	exports.nlLocale = chronos.nlLocale;
+	exports.nbLocale = chronos.nbLocale;
 	exports.nlBeLocale = chronos.nlBeLocale;
+	exports.nlLocale = chronos.nlLocale;
 	exports.plLocale = chronos.plLocale;
 	exports.ptBrLocale = chronos.ptBrLocale;
-	exports.ruLocale = chronos.ruLocale;
 	exports.roLocale = chronos.roLocale;
+	exports.ruLocale = chronos.ruLocale;
 	exports.skLocale = chronos.skLocale;
 	exports.slLocale = chronos.slLocale;
 	exports.svLocale = chronos.svLocale;
@@ -50,4 +53,4 @@
 
 })));
 
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmd4LWJvb3RzdHJhcC1sb2NhbGUudW1kLmpzLm1hcCIsInNvdXJjZXMiOltdLCJzb3VyY2VzQ29udGVudCI6W10sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OyJ9
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmd4LWJvb3RzdHJhcC1sb2NhbGUudW1kLmpzLm1hcCIsInNvdXJjZXMiOltdLCJzb3VyY2VzQ29udGVudCI6W10sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OyJ9
