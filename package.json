@@ -1,6 +1,6 @@
 {
-  "name": "ngx-bootstrap",
-  "version": "3.1.1",
+  "name": "ngx-bootstrap-base",
+  "version": "3.1.2",
   "description": "Native Angular Bootstrap Components",
   "private": true,
   "scripts": {
@@ -135,9 +135,9 @@
     "karma-coverage-istanbul-reporter": "^1.2.1",
     "karma-edge-launcher": "0.4.2",
     "karma-firefox-launcher": "1.1.0",
+    "karma-ie-launcher": "1.0.0",
     "karma-jasmine": "1.1.2",
     "karma-jasmine-html-reporter": "1.1.0",
-    "karma-ie-launcher": "1.0.0",
     "karma-remap-istanbul": "0.6.0",
     "karma-safari-launcher": "1.0.0",
     "karma-sauce-launcher": "1.2.0",
@@ -166,6 +166,7 @@
     "wait-on": "2.1.0",
     "wallaby-webpack": "3.9.7",
     "webpack-bundle-analyzer": "2.11.3",
+    "webpack-cli": "3.1.2",
     "zone.js": "0.8.26"
   }
 }
