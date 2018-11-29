@@ -1,5 +1,5 @@
 {
-  "name": "ngx-bootstrap-base",
+  "name": "ngx-bootstrap",
   "version": "3.1.2",
   "description": "Native Angular Bootstrap Components",
   "private": true,
@@ -55,7 +55,7 @@
   },
   "main": "dist/bundles/ngx-bootstrap.umd.js",
   "module": "dist/esm5/ngx-bootstrap.js",
-  "typings": "ngx-bootstrap.d.ts",
+  "typings": "dist/ngx-bootstrap.d.ts",
   "keywords": [
     "angular",
     "bootstap",
